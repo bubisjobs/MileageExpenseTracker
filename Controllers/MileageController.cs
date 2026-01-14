@@ -19,7 +19,7 @@ namespace MileageExpenseTracker.Controllers
             // TODO: Get current user ID from authentication
             var currentUserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
 
-            var claims = await _applicationDbContext.mileageClaims
+            var claims = await _applicationDbContext.MileageClaims
                 .Where(c => c.EmployeeId == currentUserId)
                 .OrderByDescending(c => c.CreatedAt)
                 .Select(c => new
@@ -74,8 +74,8 @@ namespace MileageExpenseTracker.Controllers
                     UpdatedAt = DateTime.UtcNow
                 };
 
-                _context.MileageClaims.Add(claim);
-                await _context.SaveChangesAsync();
+                _applicationDbContext.MileageClaims.Add(claim);
+                await _applicationDbContext.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Edit), new { id = claim.Id });
             }
@@ -86,7 +86,7 @@ namespace MileageExpenseTracker.Controllers
         // GET: Mileage/Edit/5
         public async Task<IActionResult> Edit(Guid id)
         {
-            var claim = await _context.MileageClaims
+            var claim = await _applicationDbContext.MileageClaims
                 .Include(c => c.Trips)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
@@ -135,7 +135,7 @@ namespace MileageExpenseTracker.Controllers
 
             if (ModelState.IsValid)
             {
-                var claim = await _context.MileageClaims
+                var claim = await _applicationDbContext.MileageClaims
                     .Include(c => c.Trips)
                     .FirstOrDefaultAsync(c => c.Id == id);
 
@@ -156,7 +156,7 @@ namespace MileageExpenseTracker.Controllers
                 claim.RatePerKm = model.RatePerKm;
                 claim.UpdatedAt = DateTime.UtcNow;
 
-                await _context.SaveChangesAsync();
+                await _applicationDbContext.SaveChangesAsync();
 
                 TempData["Success"] = "Claim updated successfully.";
                 return RedirectToAction(nameof(Edit), new { id });
@@ -169,7 +169,7 @@ namespace MileageExpenseTracker.Controllers
         [HttpPost]
         public async Task<IActionResult> AddTrip(Guid claimId, MileageTripViewModel model)
         {
-            var claim = await _context.MileageClaims.FindAsync(claimId);
+            var claim = await _applicationDbContext.MileageClaims.FindAsync(claimId);
 
             if (claim == null || claim.Status != "Draft")
             {
@@ -189,14 +189,14 @@ namespace MileageExpenseTracker.Controllers
                 Reimbursement = model.Kilometers * claim.RatePerKm
             };
 
-            _context.MileageTrips.Add(trip);
+            _applicationDbContext.MileageTrips.Add(trip);
 
             // Update totals
             claim.TotalKilometers += trip.Kilometers;
             claim.TotalReimbursement += trip.Reimbursement;
             claim.UpdatedAt = DateTime.UtcNow;
 
-            await _context.SaveChangesAsync();
+            await _applicationDbContext.SaveChangesAsync();
 
             return Json(new { success = true, tripId = trip.Id });
         }
@@ -205,7 +205,7 @@ namespace MileageExpenseTracker.Controllers
         [HttpPost]
         public async Task<IActionResult> UpdateTrip(Guid id, MileageTripViewModel model)
         {
-            var trip = await _context.MileageTrips
+            var trip = await _applicationDbContext.MileageTrips
                 .Include(t => t.Claim)
                 .FirstOrDefaultAsync(t => t.Id == id);
 
@@ -230,7 +230,7 @@ namespace MileageExpenseTracker.Controllers
             trip.Claim.TotalReimbursement = trip.Claim.TotalReimbursement - oldReimbursement + trip.Reimbursement;
             trip.Claim.UpdatedAt = DateTime.UtcNow;
 
-            await _context.SaveChangesAsync();
+            await _applicationDbContext.SaveChangesAsync();
 
             return Json(new { success = true });
         }
@@ -239,7 +239,7 @@ namespace MileageExpenseTracker.Controllers
         [HttpPost]
         public async Task<IActionResult> DeleteTrip(Guid id)
         {
-            var trip = await _context.MileageTrips
+            var trip = await _applicationDbContext.MileageTrips
                 .Include(t => t.Claim)
                 .FirstOrDefaultAsync(t => t.Id == id);
 
@@ -253,8 +253,8 @@ namespace MileageExpenseTracker.Controllers
             trip.Claim.TotalReimbursement -= trip.Reimbursement;
             trip.Claim.UpdatedAt = DateTime.UtcNow;
 
-            _context.MileageTrips.Remove(trip);
-            await _context.SaveChangesAsync();
+            _applicationDbContext.MileageTrips.Remove(trip);
+            await _applicationDbContext.SaveChangesAsync();
 
             return Json(new { success = true });
         }
@@ -263,7 +263,7 @@ namespace MileageExpenseTracker.Controllers
         [HttpPost]
         public async Task<IActionResult> Submit(Guid id)
         {
-            var claim = await _context.MileageClaims
+            var claim = await _applicationDbContext.MileageClaims
                 .Include(c => c.Trips)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
@@ -281,11 +281,11 @@ namespace MileageExpenseTracker.Controllers
             claim.SubmittedAt = DateTime.UtcNow;
             claim.UpdatedAt = DateTime.UtcNow;
 
-            await _context.SaveChangesAsync();
+            await _applicationDbContext.SaveChangesAsync();
 
             TempData["Success"] = "Claim submitted successfully.";
             return Json(new { success = true });
         }
     }
 }
-}
+
