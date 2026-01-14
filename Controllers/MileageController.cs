@@ -1,0 +1,291 @@
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
+using MileageExpenseTracker.Data;
+using MileageExpenseTracker.Models.ViewModels;
+using MileageExpenseTracker.Models;
+
+namespace MileageExpenseTracker.Controllers
+{
+    public class MileageController : Controller
+    {
+        private readonly ApplicationDbContext _applicationDbContext;
+        public MileageController(ApplicationDbContext applicationDbContext)
+        {
+            _applicationDbContext = applicationDbContext;
+            
+        }
+        public async Task<IActionResult> Index()
+        {
+            // TODO: Get current user ID from authentication
+            var currentUserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+            var claims = await _applicationDbContext.mileageClaims
+                .Where(c => c.EmployeeId == currentUserId)
+                .OrderByDescending(c => c.CreatedAt)
+                .Select(c => new
+                {
+                    c.Id,
+                    c.StartDate,
+                    c.EndDate,
+                    c.Status,
+                    c.TotalKilometers,
+                    c.TotalReimbursement,
+                    c.SubmittedAt,
+                    c.DecisionAt,
+                    TripCount = c.Trips.Count
+                })
+                .ToListAsync();
+
+            return View(claims);
+        }
+
+        // GET: Mileage/Create
+        public IActionResult Create()
+        {
+            var model = new MileageClaimViewModel
+            {
+                StartDate = DateTime.Today,
+                EndDate = DateTime.Today,
+                RatePerKm = 0.50m,
+                Status = "Draft"
+            };
+
+            return View(model);
+        }
+
+        // POST: Mileage/Create
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(MileageClaimViewModel model)
+        {
+            if (ModelState.IsValid)
+            {
+                var currentUserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+
+                var claim = new MileageClaim
+                {
+                    Id = Guid.NewGuid(),
+                    EmployeeId = currentUserId,
+                    StartDate = model.StartDate,
+                    EndDate = model.EndDate,
+                    RatePerKm = model.RatePerKm,
+                    Status = "Draft",
+                    CreatedAt = DateTime.UtcNow,
+                    UpdatedAt = DateTime.UtcNow
+                };
+
+                _context.MileageClaims.Add(claim);
+                await _context.SaveChangesAsync();
+
+                return RedirectToAction(nameof(Edit), new { id = claim.Id });
+            }
+
+            return View(model);
+        }
+
+        // GET: Mileage/Edit/5
+        public async Task<IActionResult> Edit(Guid id)
+        {
+            var claim = await _context.MileageClaims
+                .Include(c => c.Trips)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (claim == null)
+            {
+                return NotFound();
+            }
+
+            var model = new MileageClaimViewModel
+            {
+                Id = claim.Id,
+                StartDate = claim.StartDate,
+                EndDate = claim.EndDate,
+                RatePerKm = claim.RatePerKm,
+                Status = claim.Status,
+                TotalKilometers = claim.TotalKilometers,
+                TotalReimbursement = claim.TotalReimbursement,
+                SubmittedAt = claim.SubmittedAt,
+                DecisionAt = claim.DecisionAt,
+                DecisionComment = claim.DecisionComment,
+                Trips = claim.Trips.Select(t => new MileageTripViewModel
+                {
+                    Id = t.Id,
+                    TripDate = t.TripDate,
+                    TripTime = t.TripTime,
+                    Description = t.Description,
+                    StartLocation = t.StartLocation,
+                    EndLocation = t.EndLocation,
+                    Kilometers = t.Kilometers,
+                    Reimbursement = t.Reimbursement
+                }).ToList()
+            };
+
+            return View(model);
+        }
+
+        // POST: Mileage/Edit/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Guid id, MileageClaimViewModel model)
+        {
+            if (id != model.Id)
+            {
+                return NotFound();
+            }
+
+            if (ModelState.IsValid)
+            {
+                var claim = await _context.MileageClaims
+                    .Include(c => c.Trips)
+                    .FirstOrDefaultAsync(c => c.Id == id);
+
+                if (claim == null)
+                {
+                    return NotFound();
+                }
+
+                // Only allow editing if status is Draft
+                if (claim.Status != "Draft")
+                {
+                    TempData["Error"] = "Cannot edit a claim that has been submitted.";
+                    return RedirectToAction(nameof(Edit), new { id });
+                }
+
+                claim.StartDate = model.StartDate;
+                claim.EndDate = model.EndDate;
+                claim.RatePerKm = model.RatePerKm;
+                claim.UpdatedAt = DateTime.UtcNow;
+
+                await _context.SaveChangesAsync();
+
+                TempData["Success"] = "Claim updated successfully.";
+                return RedirectToAction(nameof(Edit), new { id });
+            }
+
+            return View(model);
+        }
+
+        // POST: Mileage/AddTrip
+        [HttpPost]
+        public async Task<IActionResult> AddTrip(Guid claimId, MileageTripViewModel model)
+        {
+            var claim = await _context.MileageClaims.FindAsync(claimId);
+
+            if (claim == null || claim.Status != "Draft")
+            {
+                return Json(new { success = false, message = "Cannot add trip to this claim." });
+            }
+
+            var trip = new MileageTrip
+            {
+                Id = Guid.NewGuid(),
+                ClaimId = claimId,
+                TripDate = model.TripDate,
+                TripTime = model.TripTime,
+                Description = model.Description,
+                StartLocation = model.StartLocation,
+                EndLocation = model.EndLocation,
+                Kilometers = model.Kilometers,
+                Reimbursement = model.Kilometers * claim.RatePerKm
+            };
+
+            _context.MileageTrips.Add(trip);
+
+            // Update totals
+            claim.TotalKilometers += trip.Kilometers;
+            claim.TotalReimbursement += trip.Reimbursement;
+            claim.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true, tripId = trip.Id });
+        }
+
+        // POST: Mileage/UpdateTrip
+        [HttpPost]
+        public async Task<IActionResult> UpdateTrip(Guid id, MileageTripViewModel model)
+        {
+            var trip = await _context.MileageTrips
+                .Include(t => t.Claim)
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (trip == null || trip.Claim.Status != "Draft")
+            {
+                return Json(new { success = false, message = "Cannot update this trip." });
+            }
+
+            var oldKilometers = trip.Kilometers;
+            var oldReimbursement = trip.Reimbursement;
+
+            trip.TripDate = model.TripDate;
+            trip.TripTime = model.TripTime;
+            trip.Description = model.Description;
+            trip.StartLocation = model.StartLocation;
+            trip.EndLocation = model.EndLocation;
+            trip.Kilometers = model.Kilometers;
+            trip.Reimbursement = model.Kilometers * trip.Claim.RatePerKm;
+
+            // Update claim totals
+            trip.Claim.TotalKilometers = trip.Claim.TotalKilometers - oldKilometers + trip.Kilometers;
+            trip.Claim.TotalReimbursement = trip.Claim.TotalReimbursement - oldReimbursement + trip.Reimbursement;
+            trip.Claim.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true });
+        }
+
+        // POST: Mileage/DeleteTrip
+        [HttpPost]
+        public async Task<IActionResult> DeleteTrip(Guid id)
+        {
+            var trip = await _context.MileageTrips
+                .Include(t => t.Claim)
+                .FirstOrDefaultAsync(t => t.Id == id);
+
+            if (trip == null || trip.Claim.Status != "Draft")
+            {
+                return Json(new { success = false, message = "Cannot delete this trip." });
+            }
+
+            // Update claim totals
+            trip.Claim.TotalKilometers -= trip.Kilometers;
+            trip.Claim.TotalReimbursement -= trip.Reimbursement;
+            trip.Claim.UpdatedAt = DateTime.UtcNow;
+
+            _context.MileageTrips.Remove(trip);
+            await _context.SaveChangesAsync();
+
+            return Json(new { success = true });
+        }
+
+        // POST: Mileage/Submit
+        [HttpPost]
+        public async Task<IActionResult> Submit(Guid id)
+        {
+            var claim = await _context.MileageClaims
+                .Include(c => c.Trips)
+                .FirstOrDefaultAsync(c => c.Id == id);
+
+            if (claim == null || claim.Status != "Draft")
+            {
+                return Json(new { success = false, message = "Cannot submit this claim." });
+            }
+
+            if (!claim.Trips.Any())
+            {
+                return Json(new { success = false, message = "Cannot submit a claim with no trips." });
+            }
+
+            claim.Status = "Submitted";
+            claim.SubmittedAt = DateTime.UtcNow;
+            claim.UpdatedAt = DateTime.UtcNow;
+
+            await _context.SaveChangesAsync();
+
+            TempData["Success"] = "Claim submitted successfully.";
+            return Json(new { success = true });
+        }
+    }
+}
+}
