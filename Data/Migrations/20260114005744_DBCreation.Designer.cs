@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MileageExpenseTracker.Data;
 
@@ -11,9 +12,11 @@ using MileageExpenseTracker.Data;
 namespace MileageExpenseTracker.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260114005744_DBCreation")]
+    partial class DBCreation
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -240,6 +243,7 @@ namespace MileageExpenseTracker.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("DecisionComment")
+                        .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<Guid>("EmployeeId")
@@ -249,7 +253,7 @@ namespace MileageExpenseTracker.Data.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<decimal>("RatePerKm")
-                        .HasColumnType("decimal(10,2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
@@ -262,11 +266,11 @@ namespace MileageExpenseTracker.Data.Migrations
                     b.Property<DateTime?>("SubmittedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal?>("TotalKilometers")
-                        .HasColumnType("decimal(10,2)");
+                    b.Property<decimal>("TotalKilometers")
+                        .HasColumnType("decimal(18,2)");
 
-                    b.Property<decimal?>("TotalReimbursement")
-                        .HasColumnType("decimal(10,2)");
+                    b.Property<decimal>("TotalReimbursement")
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<DateTime>("UpdatedAt")
                         .HasColumnType("datetime2");
@@ -275,7 +279,7 @@ namespace MileageExpenseTracker.Data.Migrations
 
                     b.HasIndex("ApproverId");
 
-                    b.HasIndex("EmployeeId", "Status", "StartDate");
+                    b.HasIndex("EmployeeId");
 
                     b.ToTable("MileageClaims");
                 });
@@ -300,10 +304,10 @@ namespace MileageExpenseTracker.Data.Migrations
                         .HasColumnType("nvarchar(250)");
 
                     b.Property<decimal>("Kilometers")
-                        .HasColumnType("decimal(10,2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<decimal>("Reimbursement")
-                        .HasColumnType("decimal(10,2)");
+                        .HasColumnType("decimal(18,2)");
 
                     b.Property<string>("StartLocation")
                         .IsRequired()
@@ -320,7 +324,7 @@ namespace MileageExpenseTracker.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.HasIndex("ClaimId", "TripDate");
+                    b.HasIndex("ClaimId");
 
                     b.ToTable("MileageTrips");
                 });
@@ -403,13 +407,12 @@ namespace MileageExpenseTracker.Data.Migrations
                 {
                     b.HasOne("MileageExpenseTracker.Models.User", "Approver")
                         .WithMany()
-                        .HasForeignKey("ApproverId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("ApproverId");
 
                     b.HasOne("MileageExpenseTracker.Models.User", "Employee")
                         .WithMany()
                         .HasForeignKey("EmployeeId")
-                        .OnDelete(DeleteBehavior.Restrict)
+                        .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Approver");

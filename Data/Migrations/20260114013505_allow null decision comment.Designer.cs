@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using MileageExpenseTracker.Data;
 
@@ -11,9 +12,11 @@ using MileageExpenseTracker.Data;
 namespace MileageExpenseTracker.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260114013505_allow null decision comment")]
+    partial class allownulldecisioncomment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -262,10 +265,10 @@ namespace MileageExpenseTracker.Data.Migrations
                     b.Property<DateTime?>("SubmittedAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<decimal?>("TotalKilometers")
+                    b.Property<decimal>("TotalKilometers")
                         .HasColumnType("decimal(10,2)");
 
-                    b.Property<decimal?>("TotalReimbursement")
+                    b.Property<decimal>("TotalReimbursement")
                         .HasColumnType("decimal(10,2)");
 
                     b.Property<DateTime>("UpdatedAt")

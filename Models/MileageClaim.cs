@@ -33,11 +33,11 @@ namespace MileageExpenseTracker.Models
 
         public DateTime? DecisionAt { get; set; }
 
-        public string DecisionComment { get; set; }
+        public string? DecisionComment { get; set; }
 
-        public decimal TotalKilometers { get; set; }
+        public decimal? TotalKilometers { get; set; }
 
-        public decimal TotalReimbursement { get; set; }
+        public decimal? TotalReimbursement { get; set; }
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
@@ -45,7 +45,7 @@ namespace MileageExpenseTracker.Models
 
         // Navigation properties
         public virtual ICollection<MileageTrip> Trips { get; set; } = new List<MileageTrip>();
-        public virtual User Employee { get; set; }
-        public virtual User Approver { get; set; }
+        public virtual User? Employee { get; set; }
+        public virtual User? Approver { get; set; }
     }
 }

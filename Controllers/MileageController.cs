@@ -14,10 +14,37 @@ namespace MileageExpenseTracker.Controllers
             _applicationDbContext = applicationDbContext;
             
         }
+        // Helper method to get or create current user
+        private async Task<Guid> GetOrCreateCurrentUserAsync()
+        {
+            // TODO: Replace with actual authentication - User.Identity.Name or User.FindFirst(ClaimTypes.NameIdentifier)
+            var userEmail = "employee@mileagetracker.com";
+
+            var user = await _applicationDbContext.Users.FirstOrDefaultAsync(u => u.Email == userEmail);
+
+            if (user == null)
+            {
+                user = new User
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Demo Employee",
+                    Email = userEmail,
+                    Role = "Employee"
+                };
+
+                _applicationDbContext.Users.Add(user);
+                await _applicationDbContext.SaveChangesAsync();
+            }
+
+            return user.Id;
+        }
+
         public async Task<IActionResult> Index()
         {
             // TODO: Get current user ID from authentication
-            var currentUserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+            //var currentUserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+            var currentUserId = await GetOrCreateCurrentUserAsync();
+
 
             var claims = await _applicationDbContext.MileageClaims
                 .Where(c => c.EmployeeId == currentUserId)
@@ -58,11 +85,11 @@ namespace MileageExpenseTracker.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(MileageClaimViewModel model)
         {
-            if (ModelState.IsValid)
-            {
-                var currentUserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
+            //if (ModelState.IsValid)
+            //{
+            var currentUserId = await GetOrCreateCurrentUserAsync();
 
-                var claim = new MileageClaim
+            var claim = new MileageClaim
                 {
                     Id = Guid.NewGuid(),
                     EmployeeId = currentUserId,
@@ -78,9 +105,9 @@ namespace MileageExpenseTracker.Controllers
                 await _applicationDbContext.SaveChangesAsync();
 
                 return RedirectToAction(nameof(Edit), new { id = claim.Id });
-            }
+        //}
 
-            return View(model);
+        //    return View(model);
         }
 
         // GET: Mileage/Edit/5
@@ -102,8 +129,8 @@ namespace MileageExpenseTracker.Controllers
                 EndDate = claim.EndDate,
                 RatePerKm = claim.RatePerKm,
                 Status = claim.Status,
-                TotalKilometers = claim.TotalKilometers,
-                TotalReimbursement = claim.TotalReimbursement,
+                TotalKilometers = (decimal)claim.TotalKilometers,
+                TotalReimbursement = (decimal)claim.TotalReimbursement,
                 SubmittedAt = claim.SubmittedAt,
                 DecisionAt = claim.DecisionAt,
                 DecisionComment = claim.DecisionComment,
