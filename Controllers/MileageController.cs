@@ -27,7 +27,8 @@ namespace MileageExpenseTracker.Controllers
                 user = new User
                 {
                     Id = Guid.NewGuid(),
-                    Name = "Demo Employee",
+                    FirstName = "Demo Employee",
+                    LastName = "User",
                     Email = userEmail,
                     Role = "Employee"
                 };
@@ -43,11 +44,11 @@ namespace MileageExpenseTracker.Controllers
         {
             // TODO: Get current user ID from authentication
             //var currentUserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
-            var currentUserId = await GetOrCreateCurrentUserAsync();
+            var currentUserId = User.Identity?.Name;
 
 
             var claims = await _applicationDbContext.MileageClaims
-                .Where(c => c.EmployeeId == currentUserId)
+                //.Where(c => c.EmployeeId == currentUserId)
                 .OrderByDescending(c => c.CreatedAt)
                 .Select(c => new
                 {
@@ -58,7 +59,7 @@ namespace MileageExpenseTracker.Controllers
                     c.TotalKilometers,
                     c.TotalReimbursement,
                     c.SubmittedAt,
-                    c.DecisionAt,
+                    //c.DecisionAt,
                     TripCount = c.Trips.Count
                 })
                 .ToListAsync();
@@ -87,7 +88,7 @@ namespace MileageExpenseTracker.Controllers
         {
             //if (ModelState.IsValid)
             //{
-            var currentUserId = await GetOrCreateCurrentUserAsync();
+            var currentUserId = User.Identity?.Name;
 
             var claim = new MileageClaim
                 {
@@ -96,7 +97,7 @@ namespace MileageExpenseTracker.Controllers
                     StartDate = model.StartDate,
                     EndDate = model.EndDate,
                     RatePerKm = model.RatePerKm,
-                    Status = "Draft",
+                    //Status = "Draft",
                     CreatedAt = DateTime.UtcNow,
                     UpdatedAt = DateTime.UtcNow
                 };
@@ -128,17 +129,17 @@ namespace MileageExpenseTracker.Controllers
                 StartDate = claim.StartDate,
                 EndDate = claim.EndDate,
                 RatePerKm = claim.RatePerKm,
-                Status = claim.Status,
+                //Status = claim.Status,
                 TotalKilometers = (decimal)claim.TotalKilometers,
                 TotalReimbursement = (decimal)claim.TotalReimbursement,
                 SubmittedAt = claim.SubmittedAt,
-                DecisionAt = claim.DecisionAt,
-                DecisionComment = claim.DecisionComment,
+                //DecisionAt = claim.DecisionAt,
+                //DecisionComment = claim.DecisionComment,
                 Trips = claim.Trips.Select(t => new MileageTripViewModel
                 {
                     Id = t.Id,
                     TripDate = t.TripDate,
-                    TripTime = t.TripTime,
+                    //TripTime = t.TripTime,
                     Description = t.Description,
                     StartLocation = t.StartLocation,
                     EndLocation = t.EndLocation,
@@ -172,11 +173,11 @@ namespace MileageExpenseTracker.Controllers
                 }
 
                 // Only allow editing if status is Draft
-                if (claim.Status != "Draft")
-                {
-                    TempData["Error"] = "Cannot edit a claim that has been submitted.";
-                    return RedirectToAction(nameof(Edit), new { id });
-                }
+                //if (claim.Status != "Draft")
+                //{
+                //    TempData["Error"] = "Cannot edit a claim that has been submitted.";
+                //    return RedirectToAction(nameof(Edit), new { id });
+                //}
 
                 claim.StartDate = model.StartDate;
                 claim.EndDate = model.EndDate;
@@ -198,17 +199,17 @@ namespace MileageExpenseTracker.Controllers
         {
             var claim = await _applicationDbContext.MileageClaims.FindAsync(claimId);
 
-            if (claim == null || claim.Status != "Draft")
-            {
-                return Json(new { success = false, message = "Cannot add trip to this claim." });
-            }
+            //if (claim == null || claim.Status != "Draft")
+            //{
+            //    return Json(new { success = false, message = "Cannot add trip to this claim." });
+            //}
 
             var trip = new MileageTrip
             {
                 Id = Guid.NewGuid(),
                 ClaimId = claimId,
                 TripDate = model.TripDate,
-                TripTime = model.TripTime,
+                //TripTime = model.TripTime,
                 Description = model.Description,
                 StartLocation = model.StartLocation,
                 EndLocation = model.EndLocation,
@@ -236,16 +237,16 @@ namespace MileageExpenseTracker.Controllers
                 .Include(t => t.Claim)
                 .FirstOrDefaultAsync(t => t.Id == id);
 
-            if (trip == null || trip.Claim.Status != "Draft")
-            {
-                return Json(new { success = false, message = "Cannot update this trip." });
-            }
+            //if (trip == null || trip.Claim.Status != "Draft")
+            //{
+            //    return Json(new { success = false, message = "Cannot update this trip." });
+            //}
 
             var oldKilometers = trip.Kilometers;
             var oldReimbursement = trip.Reimbursement;
 
             trip.TripDate = model.TripDate;
-            trip.TripTime = model.TripTime;
+            //trip.TripTime = model.TripTime;
             trip.Description = model.Description;
             trip.StartLocation = model.StartLocation;
             trip.EndLocation = model.EndLocation;
@@ -270,10 +271,10 @@ namespace MileageExpenseTracker.Controllers
                 .Include(t => t.Claim)
                 .FirstOrDefaultAsync(t => t.Id == id);
 
-            if (trip == null || trip.Claim.Status != "Draft")
-            {
-                return Json(new { success = false, message = "Cannot delete this trip." });
-            }
+            //if (trip == null || trip.Claim.Status != "Draft")
+            //{
+            //    return Json(new { success = false, message = "Cannot delete this trip." });
+            //}
 
             // Update claim totals
             trip.Claim.TotalKilometers -= trip.Kilometers;
@@ -294,17 +295,17 @@ namespace MileageExpenseTracker.Controllers
                 .Include(c => c.Trips)
                 .FirstOrDefaultAsync(c => c.Id == id);
 
-            if (claim == null || claim.Status != "Draft")
-            {
-                return Json(new { success = false, message = "Cannot submit this claim." });
-            }
+            //if (claim == null || claim.Status != "Draft")
+            //{
+            //    return Json(new { success = false, message = "Cannot submit this claim." });
+            //}
 
-            if (!claim.Trips.Any())
-            {
-                return Json(new { success = false, message = "Cannot submit a claim with no trips." });
-            }
+            //if (!claim.Trips.Any())
+            //{
+            //    return Json(new { success = false, message = "Cannot submit a claim with no trips." });
+            //}
 
-            claim.Status = "Submitted";
+            //claim.Status = "Submitted";
             claim.SubmittedAt = DateTime.UtcNow;
             claim.UpdatedAt = DateTime.UtcNow;
 

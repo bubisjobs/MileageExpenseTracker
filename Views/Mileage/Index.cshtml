@@ -50,16 +50,16 @@
                                     @claim.StartDate.ToString("MMM dd, yyyy") to @claim.EndDate.ToString("MMM dd, yyyy")
                                 </h3>
                                 @{
-                                    var statusClass = claim.Status switch
-                                    {
-                                        "Draft" => "status-draft",
-                                        "Submitted" => "status-submitted",
-                                        "Approved" => "status-approved",
-                                        "Rejected" => "status-rejected",
-                                        _ => "status-draft"
-                                    };
+                                    // var statusClass = claim.Status switch
+                                    // {
+                                    //     "Draft" => "status-draft",
+                                    //     "Submitted" => "status-submitted",
+                                    //     "Approved" => "status-approved",
+                                    //     "Rejected" => "status-rejected",
+                                    //     _ => "status-draft"
+                                    // };
                                 }
-                                <span class="status-badge @statusClass">@claim.Status</span>
+                                @* <span class="status-badge @statusClass">@claim.Status</span> *@
                             </div>
                             <div class="row" style="font-size: 0.875rem;">
                                 <div class="col-md-4">
@@ -81,12 +81,12 @@
                                     Submitted: @claim.SubmittedAt?.ToString("MMM dd, yyyy")
                                 </p>
                             }
-                            @if (claim.DecisionAt != null)
-                            {
-                                <p class="text-muted-custom mb-0 mt-1" style="font-size: 0.875rem;">
-                                    Decision: @claim.DecisionAt?.ToString("MMM dd, yyyy")
-                                </p>
-                            }
+                            @* @if (claim.DecisionAt != null) *@
+                            @* { *@
+                            @*     <p class="text-muted-custom mb-0 mt-1" style="font-size: 0.875rem;"> *@
+                            @*         Decision: @claim.DecisionAt?.ToString("MMM dd, yyyy") *@
+                            @*     </p> *@
+                            @* } *@
                         </div>
                         <a asp-action="Edit" asp-route-id="@claim.Id" class="text-decoration-none fw-medium d-flex align-items-center gap-1"
                            style="color: var(--blue-600);">

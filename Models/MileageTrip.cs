@@ -14,9 +14,9 @@ namespace MileageExpenseTracker.Models
         [DataType(DataType.Date)]
         public DateTime TripDate { get; set; }
 
-        [MaxLength(20)]
-        [Display(Name = "Time")]
-        public string TripTime { get; set; }
+        //[MaxLength(20)]
+        //[Display(Name = "Time")]
+        //public string TripTime { get; set; }
 
         [MaxLength(300)]
         [Display(Name = "Description")]
