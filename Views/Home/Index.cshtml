@@ -1,8 +1,446 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
+﻿
+
+<!-- ============================================================================ -->
+<!-- Views/Dashboard/Index.cshtml -->
+<!-- ============================================================================ -->
+@{
+    ViewData["Title"] = "Dashboard";
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container" style="max-width: 1400px; margin: 0 auto; padding: 1.5rem;">
+    <!-- Page Header -->
+    <div class="mb-4">
+        <h1 class="text-dark-custom" style="font-size: 2rem; font-weight: 700; margin-bottom: 0.5rem;">Dashboard</h1>
+        <p class="text-muted-custom" style="margin: 0; font-size: 1rem;">Overview of your mileage claims and reimbursements</p>
+    </div>
+
+    <!-- Stats Cards Row -->
+    <div class="row g-3 mb-4">
+        <!-- Total Claims -->
+        <div class="col-md-3">
+            <div class="custom-card" style="padding: 1.5rem;">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <p class="text-muted-custom mb-1" style="font-size: 0.875rem; font-weight: 500;">Total Claims</p>
+                        <h2 class="text-dark-custom mb-0" style="font-size: 2rem; font-weight: 700;">24</h2>
+                    </div>
+                    <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-file-text" style="font-size: 1.5rem; color: white;"></i>
+                    </div>
+                </div>
+                <div style="font-size: 0.875rem;">
+                    <span style="color: #10b981; font-weight: 600;">↑ 12%</span>
+                    <span class="text-muted-custom"> vs last month</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Distance -->
+        <div class="col-md-3">
+            <div class="custom-card" style="padding: 1.5rem;">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <p class="text-muted-custom mb-1" style="font-size: 0.875rem; font-weight: 500;">Total Distance</p>
+                        <h2 class="text-dark-custom mb-0" style="font-size: 2rem; font-weight: 700;">3,456 km</h2>
+                    </div>
+                    <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-speedometer2" style="font-size: 1.5rem; color: white;"></i>
+                    </div>
+                </div>
+                <div style="font-size: 0.875rem;">
+                    <span style="color: #10b981; font-weight: 600;">↑ 8%</span>
+                    <span class="text-muted-custom"> vs last month</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Total Reimbursement -->
+        <div class="col-md-3">
+            <div class="custom-card" style="padding: 1.5rem;">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <p class="text-muted-custom mb-1" style="font-size: 0.875rem; font-weight: 500;">Total Reimbursement</p>
+                        <h2 class="text-dark-custom mb-0" style="font-size: 2rem; font-weight: 700;">$1,728</h2>
+                    </div>
+                    <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-currency-dollar" style="font-size: 1.5rem; color: white;"></i>
+                    </div>
+                </div>
+                <div style="font-size: 0.875rem;">
+                    <span style="color: #10b981; font-weight: 600;">↑ 8%</span>
+                    <span class="text-muted-custom"> vs last month</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Approvals -->
+        <div class="col-md-3">
+            <div class="custom-card" style="padding: 1.5rem;">
+                <div class="d-flex justify-content-between align-items-start mb-3">
+                    <div>
+                        <p class="text-muted-custom mb-1" style="font-size: 0.875rem; font-weight: 500;">Pending Approvals</p>
+                        <h2 class="text-dark-custom mb-0" style="font-size: 2rem; font-weight: 700;">3</h2>
+                    </div>
+                    <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center;">
+                        <i class="bi bi-clock-history" style="font-size: 1.5rem; color: white;"></i>
+                    </div>
+                </div>
+                <div style="font-size: 0.875rem;">
+                    <span style="color: #6b7280; font-weight: 600;">2 this week</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Left Column -->
+        <div class="col-lg-8">
+            <!-- Monthly Chart -->
+            <div class="custom-card mb-4" style="padding: 1.5rem;">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="text-dark-custom mb-0" style="font-size: 1.125rem; font-weight: 600;">Monthly Overview</h3>
+                    <select class="form-select" style="width: auto; border: 1px solid #d1d5db; border-radius: 0.375rem; font-size: 0.875rem; padding: 0.5rem 2rem 0.5rem 0.75rem;">
+                        <option>Last 6 Months</option>
+                        <option>Last 12 Months</option>
+                        <option>This Year</option>
+                    </select>
+                </div>
+                <canvas id="monthlyChart" height="80"></canvas>
+            </div>
+
+            <!-- Recent Claims -->
+            <div class="custom-card" style="padding: 1.5rem;">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h3 class="text-dark-custom mb-0" style="font-size: 1.125rem; font-weight: 600;">Recent Claims</h3>
+                    <a href="/Mileage/Index" style="color: #3b82f6; text-decoration: none; font-size: 0.875rem; font-weight: 500;">View All →</a>
+                </div>
+
+                <div class="table-responsive">
+                    <table class="table mb-0" style="border-collapse: separate; border-spacing: 0;">
+                        <thead>
+                            <tr style="border-bottom: 1px solid #e5e7eb;">
+                                <th style="font-size: 0.875rem; font-weight: 600; color: #6b7280; padding: 0.75rem 0.5rem; border: none;">Date Range</th>
+                                <th style="font-size: 0.875rem; font-weight: 600; color: #6b7280; padding: 0.75rem 0.5rem; border: none;">Distance</th>
+                                <th style="font-size: 0.875rem; font-weight: 600; color: #6b7280; padding: 0.75rem 0.5rem; border: none;">Amount</th>
+                                <th style="font-size: 0.875rem; font-weight: 600; color: #6b7280; padding: 0.75rem 0.5rem; border: none;">Status</th>
+                                <th style="font-size: 0.875rem; font-weight: 600; color: #6b7280; padding: 0.75rem 0.5rem; border: none;"></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="border-bottom: 1px solid #f3f4f6;">
+                                <td style="padding: 1rem 0.5rem; border: none;">
+                                    <div style="font-size: 0.875rem; font-weight: 500; color: #111827;">Jan 16 - Jan 31</div>
+                                    <div style="font-size: 0.75rem; color: #6b7280;">8 trips</div>
+                                </td>
+                                <td style="padding: 1rem 0.5rem; border: none; font-size: 0.875rem; color: #374151;">245.5 km</td>
+                                <td style="padding: 1rem 0.5rem; border: none; font-size: 0.875rem; font-weight: 600; color: #111827;">$122.75</td>
+                                <td style="padding: 1rem 0.5rem; border: none;">
+                                    <span class="status-badge status-submitted">Submitted</span>
+                                </td>
+                                <td style="padding: 1rem 0.5rem; border: none; text-align: right;">
+                                    <a href="#" style="color: #3b82f6; font-size: 0.875rem; text-decoration: none;">View</a>
+                                </td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f3f4f6;">
+                                <td style="padding: 1rem 0.5rem; border: none;">
+                                    <div style="font-size: 0.875rem; font-weight: 500; color: #111827;">Jan 01 - Jan 15</div>
+                                    <div style="font-size: 0.75rem; color: #6b7280;">12 trips</div>
+                                </td>
+                                <td style="padding: 1rem 0.5rem; border: none; font-size: 0.875rem; color: #374151;">412.8 km</td>
+                                <td style="padding: 1rem 0.5rem; border: none; font-size: 0.875rem; font-weight: 600; color: #111827;">$206.40</td>
+                                <td style="padding: 1rem 0.5rem; border: none;">
+                                    <span class="status-badge status-approved">Approved</span>
+                                </td>
+                                <td style="padding: 1rem 0.5rem; border: none; text-align: right;">
+                                    <a href="#" style="color: #3b82f6; font-size: 0.875rem; text-decoration: none;">View</a>
+                                </td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f3f4f6;">
+                                <td style="padding: 1rem 0.5rem; border: none;">
+                                    <div style="font-size: 0.875rem; font-weight: 500; color: #111827;">Dec 16 - Dec 31</div>
+                                    <div style="font-size: 0.75rem; color: #6b7280;">6 trips</div>
+                                </td>
+                                <td style="padding: 1rem 0.5rem; border: none; font-size: 0.875rem; color: #374151;">189.0 km</td>
+                                <td style="padding: 1rem 0.5rem; border: none; font-size: 0.875rem; font-weight: 600; color: #111827;">$94.50</td>
+                                <td style="padding: 1rem 0.5rem; border: none;">
+                                    <span class="status-badge status-approved">Approved</span>
+                                </td>
+                                <td style="padding: 1rem 0.5rem; border: none; text-align: right;">
+                                    <a href="#" style="color: #3b82f6; font-size: 0.875rem; text-decoration: none;">View</a>
+                                </td>
+                            </tr>
+                            <tr style="border-bottom: 1px solid #f3f4f6;">
+                                <td style="padding: 1rem 0.5rem; border: none;">
+                                    <div style="font-size: 0.875rem; font-weight: 500; color: #111827;">Dec 01 - Dec 15</div>
+                                    <div style="font-size: 0.75rem; color: #6b7280;">10 trips</div>
+                                </td>
+                                <td style="padding: 1rem 0.5rem; border: none; font-size: 0.875rem; color: #374151;">312.5 km</td>
+                                <td style="padding: 1rem 0.5rem; border: none; font-size: 0.875rem; font-weight: 600; color: #111827;">$156.25</td>
+                                <td style="padding: 1rem 0.5rem; border: none;">
+                                    <span class="status-badge status-approved">Approved</span>
+                                </td>
+                                <td style="padding: 1rem 0.5rem; border: none; text-align: right;">
+                                    <a href="#" style="color: #3b82f6; font-size: 0.875rem; text-decoration: none;">View</a>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="padding: 1rem 0.5rem; border: none;">
+                                    <div style="font-size: 0.875rem; font-weight: 500; color: #111827;">Nov 16 - Nov 30</div>
+                                    <div style="font-size: 0.75rem; color: #6b7280;">5 trips</div>
+                                </td>
+                                <td style="padding: 1rem 0.5rem; border: none; font-size: 0.875rem; color: #374151;">156.2 km</td>
+                                <td style="padding: 1rem 0.5rem; border: none; font-size: 0.875rem; font-weight: 600; color: #111827;">$78.10</td>
+                                <td style="padding: 1rem 0.5rem; border: none;">
+                                    <span class="status-badge status-draft">Draft</span>
+                                </td>
+                                <td style="padding: 1rem 0.5rem; border: none; text-align: right;">
+                                    <a href="#" style="color: #3b82f6; font-size: 0.875rem; text-decoration: none;">View</a>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column -->
+        <div class="col-lg-4">
+            <!-- Quick Actions -->
+            <div class="custom-card mb-4" style="padding: 1.5rem;">
+                <h3 class="text-dark-custom mb-4" style="font-size: 1.125rem; font-weight: 600;">Quick Actions</h3>
+                <div class="d-grid gap-3">
+                    <a href="/Mileage/Create" class="btn-primary-custom text-decoration-none text-center" style="padding: 0.875rem; display: block;">
+                        <i class="bi bi-plus-circle me-2"></i>New Claim
+                    </a>
+                    <a href="/Mileage/Index" class="btn-secondary-custom text-decoration-none text-center" style="padding: 0.875rem; display: block;">
+                        <i class="bi bi-file-text me-2"></i>View All Claims
+                    </a>
+                    <a href="#" class="btn-secondary-custom text-decoration-none text-center" style="padding: 0.875rem; display: block;">
+                        <i class="bi bi-download me-2"></i>Export Report
+                    </a>
+                </div>
+            </div>
+
+            <!-- Top Performers -->
+            <div class="custom-card mb-4" style="padding: 1.5rem;">
+                <h3 class="text-dark-custom mb-4" style="font-size: 1.125rem; font-weight: 600;">Highest Mileage</h3>
+
+                <!-- House/Location with Highest Mileage -->
+                <div style="padding: 1rem; background: linear-gradient(135deg, #eff6ff 0%, #dbeafe 100%); border-radius: 0.5rem; margin-bottom: 1rem;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="bi bi-house-door" style="font-size: 1.25rem; color: white;"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; font-weight: 600; margin-bottom: 0.25rem;">Top Wik</div>
+                            <div style="font-size: 1rem; font-weight: 700; color: #1e40af; margin-bottom: 0.25rem;">CP </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span style="font-size: 1.25rem; font-weight: 700; color: #2563eb;">1,245 km</span>
+                                <span style="font-size: 0.75rem; color: #6b7280;">• 67 trips</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Client with Highest Mileage -->
+                <div style="padding: 1rem; background: linear-gradient(135deg, #f0fdf4 0%, #dcfce7 100%); border-radius: 0.5rem;">
+                    <div class="d-flex align-items-center gap-3">
+                        <div style="width: 48px; height: 48px; background: linear-gradient(135deg, #10b981 0%, #059669 100%); border-radius: 0.5rem; display: flex; align-items: center; justify-content: center; flex-shrink: 0;">
+                            <i class="bi bi-briefcase" style="font-size: 1.25rem; color: white;"></i>
+                        </div>
+                        <div class="flex-grow-1">
+                            <div style="font-size: 0.75rem; color: #6b7280; text-transform: uppercase; font-weight: 600; margin-bottom: 0.25rem;">Top Client</div>
+                            <div style="font-size: 1rem; font-weight: 700; color: #166534; margin-bottom: 0.25rem;">CP </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <span style="font-size: 1.25rem; font-weight: 700; color: #059669;">1,245 km</span>
+                                <span style="font-size: 0.75rem; color: #6b7280;">• 67 trips</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Breakdown -->
+            <div class="custom-card mb-4" style="padding: 1.5rem;">
+                <h3 class="text-dark-custom mb-4" style="font-size: 1.125rem; font-weight: 600;">Claim Status</h3>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span style="font-size: 0.875rem; color: #374151;">Approved</span>
+                        <span style="font-size: 0.875rem; font-weight: 600; color: #111827;">18</span>
+                    </div>
+                    <div style="height: 8px; background: #f3f4f6; border-radius: 4px; overflow: hidden;">
+                        <div style="height: 100%; width: 75%; background: linear-gradient(90deg, #10b981, #059669); border-radius: 4px;"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span style="font-size: 0.875rem; color: #374151;">Pending</span>
+                        <span style="font-size: 0.875rem; font-weight: 600; color: #111827;">3</span>
+                    </div>
+                    <div style="height: 8px; background: #f3f4f6; border-radius: 4px; overflow: hidden;">
+                        <div style="height: 100%; width: 12.5%; background: linear-gradient(90deg, #3b82f6, #2563eb); border-radius: 4px;"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span style="font-size: 0.875rem; color: #374151;">Draft</span>
+                        <span style="font-size: 0.875rem; font-weight: 600; color: #111827;">2</span>
+                    </div>
+                    <div style="height: 8px; background: #f3f4f6; border-radius: 4px; overflow: hidden;">
+                        <div style="height: 100%; width: 8.3%; background: linear-gradient(90deg, #6b7280, #4b5563); border-radius: 4px;"></div>
+                    </div>
+                </div>
+                <div>
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span style="font-size: 0.875rem; color: #374151;">Rejected</span>
+                        <span style="font-size: 0.875rem; font-weight: 600; color: #111827;">1</span>
+                    </div>
+                    <div style="height: 8px; background: #f3f4f6; border-radius: 4px; overflow: hidden;">
+                        <div style="height: 100%; width: 4.2%; background: linear-gradient(90deg, #ef4444, #dc2626); border-radius: 4px;"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Routes -->
+            @* <div class="custom-card" style="padding: 1.5rem;"> *@
+            @*     <h3 class="text-dark-custom mb-4" style="font-size: 1.125rem; font-weight: 600;">Top Routes</h3> *@
+            @*     <div class="d-flex flex-column gap-3"> *@
+            @*         <div class="d-flex justify-content-between align-items-start"> *@
+            @*             <div> *@
+            @*                 <div style="font-size: 0.875rem; font-weight: 500; color: #111827;">Home → Office</div> *@
+            @*                 <div style="font-size: 0.75rem; color: #6b7280;">45 trips</div> *@
+            @*             </div> *@
+            @*             <div style="font-size: 0.875rem; font-weight: 600; color: #111827;">892 km</div> *@
+            @*         </div> *@
+            @*         <div class="d-flex justify-content-between align-items-start"> *@
+            @*             <div> *@
+            @*                 <div style="font-size: 0.875rem; font-weight: 500; color: #111827;">Office → Client Site A</div> *@
+            @*                 <div style="font-size: 0.75rem; color: #6b7280;">28 trips</div> *@
+            @*             </div> *@
+            @*             <div style="font-size: 0.875rem; font-weight: 600; color: #111827;">756 km</div> *@
+            @*         </div> *@
+            @*         <div class="d-flex justify-content-between align-items-start"> *@
+            @*             <div> *@
+            @*                 <div style="font-size: 0.875rem; font-weight: 500; color: #111827;">Office → Branch Office</div> *@
+            @*                 <div style="font-size: 0.75rem; color: #6b7280;">22 trips</div> *@
+            @*             </div> *@
+            @*             <div style="font-size: 0.875rem; font-weight: 600; color: #111827;">634 km</div> *@
+            @*         </div> *@
+            @*         <div class="d-flex justify-content-between align-items-start"> *@
+            @*             <div> *@
+            @*                 <div style="font-size: 0.875rem; font-weight: 500; color: #111827;">Home → Warehouse</div> *@
+            @*                 <div style="font-size: 0.75rem; color: #6b7280;">18 trips</div> *@
+            @*             </div> *@
+            @*             <div style="font-size: 0.875rem; font-weight: 600; color: #111827;">512 km</div> *@
+            @*         </div> *@
+            @*         <div class="d-flex justify-content-between align-items-start"> *@
+            @*             <div> *@
+            @*                 <div style="font-size: 0.875rem; font-weight: 500; color: #111827;">Office → Training Center</div> *@
+            @*                 <div style="font-size: 0.75rem; color: #6b7280;">12 trips</div> *@
+            @*             </div> *@
+            @*             <div style="font-size: 0.875rem; font-weight: 600; color: #111827;">298 km</div> *@
+            @*         </div> *@
+            @*     </div> *@
+            @* </div> *@
+        </div>
+    </div>
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    // Monthly Chart
+    const ctx = document.getElementById('monthlyChart').getContext('2d');
+    const monthlyChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['Aug', 'Sep', 'Oct', 'Nov', 'Dec', 'Jan'],
+            datasets: [{
+                label: 'Distance (km)',
+                data: [420, 385, 510, 468, 501, 658],
+                borderColor: '#3b82f6',
+                backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                tension: 0.4,
+                fill: true,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                pointBackgroundColor: '#3b82f6',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2
+            }, {
+                label: 'Reimbursement ($)',
+                data: [210, 192.5, 255, 234, 250.5, 329],
+                borderColor: '#10b981',
+                backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                tension: 0.4,
+                fill: true,
+                pointRadius: 4,
+                pointHoverRadius: 6,
+                pointBackgroundColor: '#10b981',
+                pointBorderColor: '#fff',
+                pointBorderWidth: 2
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: true,
+            plugins: {
+                legend: {
+                    display: true,
+                    position: 'top',
+                    align: 'end',
+                    labels: {
+                        boxWidth: 12,
+                        boxHeight: 12,
+                        useBorderRadius: true,
+                        borderRadius: 6,
+                        padding: 15,
+                        font: {
+                            size: 12,
+                            weight: '500'
+                        }
+                    }
+                },
+                tooltip: {
+                    backgroundColor: 'rgba(0, 0, 0, 0.8)',
+                    padding: 12,
+                    titleFont: {
+                        size: 13,
+                        weight: '600'
+                    },
+                    bodyFont: {
+                        size: 13
+                    },
+                    borderColor: 'rgba(255, 255, 255, 0.1)',
+                    borderWidth: 1
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    grid: {
+                        color: '#f3f4f6',
+                        drawBorder: false
+                    },
+                    ticks: {
+                        font: {
+                            size: 11
+                        },
+                        color: '#6b7280'
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false,
+                        drawBorder: false
+                    },
+                    ticks: {
+                        font: {
+                            size: 11
+                        },
+                        color: '#6b7280'
+                    }
+                }
+            }
+        }
+    });
+</script>

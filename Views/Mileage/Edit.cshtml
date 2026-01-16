@@ -1,7 +1,7 @@
-﻿@model MileageClaimViewModel
+﻿@model MileageClaim
 @{
     ViewData["Title"] = "Mileage Claim Details";
-    var isEditable = Model.Status == "Draft";
+    var isEditable = Model?.Status.ToString() == "Draft";
 }
 
 <div class="container" style="max-width: 1280px; margin: 0 auto; padding: 1.5rem;">
@@ -14,19 +14,20 @@
         <div class="d-flex justify-content-between align-items-start">
             <div>
                 <h1 class="text-dark-custom mb-2" style="font-size: 1.875rem; font-weight: 700;">
-                    @(Model.Id.HasValue ? "Mileage Claim Details" : "New Mileage Claim")
+                    @(Model.Id != Guid.Empty ? "Mileage Claim Details" : "New Mileage Claim")
                 </h1>
                 @if (Model.Status != null)
                 {
-                    var statusClass = Model.Status switch
-                    {
-                        "Draft" => "status-draft",
-                        "Submitted" => "status-submitted",
-                        "Approved" => "status-approved",
-                        "Rejected" => "status-rejected",
-                        _ => "status-draft"
-                    };
-                    <span class="status-badge @statusClass">@Model.Status</span>
+                    @* var statusClass = Model.Status switch *@
+                    @* { *@
+                    @*     SubmittedToTeamLead => "status-draft", *@
+                    @*     "Submitted" => "status-submitted", *@
+                    @*     "Approved" => "status-approved", *@
+                    @*     "Rejected" => "status-rejected", *@
+                    @*     _ => "status-draft" *@
+                    @* }; *@
+                    @* <span class="status-badge @statusClass">@Model.Status</span> *@
+                    <span class="status-badge mt-3 text-success">@Model.Status</span>
                 }
             </div>
             @if (isEditable)
@@ -73,22 +74,38 @@
         <div class="custom-card mb-4" style="padding: 1.5rem;">
             <h2 class="text-dark-custom mb-4" style="font-size: 1.125rem; font-weight: 600;">Claim Period</h2>
             <div class="row g-3">
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <label asp-for="StartDate" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;"></label>
                     <input asp-for="StartDate" class="form-control form-control-custom" type="date" disabled="@(!isEditable)" />
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-6">
                     <label asp-for="EndDate" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;"></label>
                     <input asp-for="EndDate" class="form-control form-control-custom" type="date" disabled="@(!isEditable)" />
                 </div>
-                <div class="col-md-4">
-                    <label asp-for="RatePerKm" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;"></label>
-                    <input asp-for="RatePerKm" class="form-control form-control-custom" type="number" step="0.01" disabled="@(!isEditable)" />
-                </div>
+               
             </div>
         </div>
     </form>
 
+
+    <!-- Summary -->
+    <div class="custom-card mb-3" style="padding: 1.5rem;">
+        <h2 class="text-dark-custom mb-4" style="font-size: 1.125rem; font-weight: 600;">Summary</h2>
+        <div class="row g-4" style="max-width: 500px;">
+            <div class="col-md-6">
+                <div class="summary-card-blue">
+                    <p>Total Kilometers</p>
+                    <h3 id="totalKilometers">@Model.TotalKilometers.ToString() km</h3>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="summary-card-green">
+                    <p>Total Reimbursement</p>
+                    <h3 id="totalReimbursement">$@Model.TotalReimbursement.ToString()</h3>
+                </div>
+            </div>
+        </div>
+    </div>
     <!-- Trips Table -->
     <div class="custom-card mb-4" style="padding: 1.5rem;">
         <div class="d-flex justify-content-between align-items-center mb-4">
@@ -135,10 +152,7 @@
                                 <input type="date" class="form-control-sm w-100" value="@trip.TripDate.ToString("yyyy-MM-dd")"
                                        disabled="@(!isEditable)" data-field="TripDate" style="border: 1px solid var(--gray-300); border-radius: 0.375rem; padding: 0.25rem 0.5rem;" />
                             </td>
-                            <td>
-                                <input type="text" class="form-control-sm w-100" value="@trip.TripTime"
-                                       placeholder="HH:MM" disabled="@(!isEditable)" data-field="TripTime" style="border: 1px solid var(--gray-300); border-radius: 0.375rem; padding: 0.25rem 0.5rem;" />
-                            </td>
+                          
                             <td>
                                 <input type="text" class="form-control-sm w-100" value="@trip.Description"
                                        placeholder="Trip description" disabled="@(!isEditable)" data-field="Description" style="border: 1px solid var(--gray-300); border-radius: 0.375rem; padding: 0.25rem 0.5rem;" />
@@ -175,39 +189,22 @@
         </div>
     </div>
 
-    <!-- Summary -->
-    <div class="custom-card" style="padding: 1.5rem;">
-        <h2 class="text-dark-custom mb-4" style="font-size: 1.125rem; font-weight: 600;">Summary</h2>
-        <div class="row g-4" style="max-width: 500px;">
-            <div class="col-md-6">
-                <div class="summary-card-blue">
-                    <p>Total Kilometers</p>
-                    <h3 id="totalKilometers">@Model.TotalKilometers.ToString("N2") km</h3>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="summary-card-green">
-                    <p>Total Reimbursement</p>
-                    <h3 id="totalReimbursement">$@Model.TotalReimbursement.ToString("N2")</h3>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-
+  
+ </div>
 @section Scripts {
-    <script>
+<script>
+    console.log("Hello");
+        console.log("hello from script");
+        
+       
+</script>
+<script>
+        
         const claimId = '@Model.Id';
         const ratePerKm = @Model.RatePerKm;
         const isEditable = @(isEditable ? "true" : "false");
 
-        function calculateReimbursement(input) {
-            const kilometers = parseFloat(input.value) || 0;
-            const reimbursement = kilometers * ratePerKm;
-            const row = input.closest('tr');
-            row.querySelector('.reimbursement-value').textContent = reimbursement.toFixed(2);
-            updateTotals();
-        }
+       
 
         function updateTotals() {
             let totalKm = 0;
@@ -217,16 +214,14 @@
             const totalReimbursement = totalKm * ratePerKm;
 
             document.getElementById('totalKilometers').textContent = totalKm.toFixed(2) + ' km';
-            document.getElementById('totalReimbursement').textContent = ' + totalReimbursement.toFixed(2);
-        }
-
-        function addTrip() {
+        document.getElementById('totalReimbursement').textContent = '$' + totalReimbursement.toFixed(2);        }
+         function addTrip() {
             const tbody = document.querySelector('#tripsTable tbody');
             const newRow = document.createElement('tr');
             newRow.setAttribute('data-trip-id', 'new');
             newRow.innerHTML = `
                 <td><input type="date" class="form-control-sm w-100" data-field="TripDate" style="border: 1px solid var(--gray-300); border-radius: 0.375rem; padding: 0.25rem 0.5rem;" /></td>
-                <td><input type="text" class="form-control-sm w-100" placeholder="HH:MM" data-field="TripTime" style="border: 1px solid var(--gray-300); border-radius: 0.375rem; padding: 0.25rem 0.5rem;" /></td>
+                <td><input type="time" class="form-control-sm w-100" placeholder="HH:MM" data-field="TripTime" style="border: 1px solid var(--gray-300); border-radius: 0.375rem; padding: 0.25rem 0.5rem;" /></td>
                 <td><input type="text" class="form-control-sm w-100" placeholder="Description" data-field="Description" style="border: 1px solid var(--gray-300); border-radius: 0.375rem; padding: 0.25rem 0.5rem;" /></td>
                 <td><input type="text" class="form-control-sm w-100" placeholder="Start" data-field="StartLocation" style="border: 1px solid var(--gray-300); border-radius: 0.375rem; padding: 0.25rem 0.5rem;" /></td>
                 <td><input type="text" class="form-control-sm w-100" placeholder="End" data-field="EndLocation" style="border: 1px solid var(--gray-300); border-radius: 0.375rem; padding: 0.25rem 0.5rem;" /></td>
@@ -234,10 +229,10 @@
                 <td class="text-end fw-medium text-dark-custom">$<span class="reimbursement-value">0.00</span></td>
                 <td class="text-center">
                     <button type="button" class="btn btn-sm btn-link text-success p-0 me-2" onclick="saveNewTrip(this)" style="border: none; background: none;">
-                        <i class="bi bi-check-lg" style="font-size: 1.25rem;"></i>
+                        <i class="bi bi-check-lg" style="font-size: 1.25rem;"></i> save
                     </button>
                     <button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="this.closest('tr').remove()" style="border: none; background: none;">
-                        <i class="bi bi-x-lg" style="font-size: 1rem;"></i>
+                        <i class="bi bi-x-lg" style="font-size: 1rem;"></i> Delete
                     </button>
                 </td>
             `;
@@ -249,6 +244,13 @@
 
             // Focus on date field
             newRow.querySelector('[data-field="TripDate"]').focus();
+        }
+        function calculateReimbursement(input) {
+                const kilometers = parseFloat(input.value) || 0;
+                const reimbursement = kilometers * ratePerKm;
+                const row = input.closest('tr');
+                row.querySelector('.reimbursement-value').textContent = reimbursement.toFixed(2);
+                updateTotals();
         }
 
         async function saveNewTrip(btn) {
@@ -380,5 +382,5 @@
         document.addEventListener('DOMContentLoaded', function() {
             updateTotals();
         });
-    </script>
+</script>
 }

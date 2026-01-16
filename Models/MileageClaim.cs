@@ -11,13 +11,13 @@ namespace MileageExpenseTracker.Models
 
         // Claim owner (logged-in employee)
         [Required]
-        public string? EmployeeId { get; set; } = default!;
+        public string? EmployeeName { get; set; } = default!;
 
         // Team lead selected from dropdown (first approver)
         [Required]
-        public string? ApproverId { get; set; } = default!;
+        public string? TeamLeadApprover { get; set; } = default!;
         public virtual User? Approver { get; set; }
-        public string FinanceApprover { get; set; } = default!;
+        public string? FinanceApprover { get; set; } = default!;
 
 
         // House or wik

@@ -48,20 +48,21 @@ namespace MileageExpenseTracker.Controllers
 
 
             var claims = await _applicationDbContext.MileageClaims
-                //.Where(c => c.EmployeeId == currentUserId)
-                .OrderByDescending(c => c.CreatedAt)
-                .Select(c => new
-                {
-                    c.Id,
-                    c.StartDate,
-                    c.EndDate,
-                    c.Status,
-                    c.TotalKilometers,
-                    c.TotalReimbursement,
-                    c.SubmittedAt,
-                    //c.DecisionAt,
-                    TripCount = c.Trips.Count
-                })
+                .Include(x => x.Trips)
+                ////.Where(c => c.EmployeeId == currentUserId)
+                //.OrderByDescending(c => c.CreatedAt)
+                //.Select(c => new
+                //{
+                //    c.Id,
+                //    c.StartDate,
+                //    c.EndDate,
+                //    c.Status,
+                //    c.TotalKilometers,
+                //    c.TotalReimbursement,
+                //    c.SubmittedAt,
+                //    //c.DecisionAt,
+                //    TripCount = c.Trips.Count
+                //})
                 .ToListAsync();
 
             return View(claims);
@@ -70,12 +71,12 @@ namespace MileageExpenseTracker.Controllers
         // GET: Mileage/Create
         public IActionResult Create()
         {
-            var model = new MileageClaimViewModel
+            var model = new MileageClaim
             {
                 StartDate = DateTime.Today,
                 EndDate = DateTime.Today,
                 RatePerKm = 0.50m,
-                Status = "Draft"
+                Status = ClaimStatus.Draft
             };
 
             return View(model);
@@ -84,28 +85,50 @@ namespace MileageExpenseTracker.Controllers
         // POST: Mileage/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(MileageClaimViewModel model)
+        public async Task<IActionResult> Create(MileageClaim mileageClaim)
         {
             //if (ModelState.IsValid)
             //{
             var currentUserId = User.Identity?.Name;
 
             var claim = new MileageClaim
-                {
+            {
                     Id = Guid.NewGuid(),
-                    EmployeeId = currentUserId,
-                    StartDate = model.StartDate,
-                    EndDate = model.EndDate,
-                    RatePerKm = model.RatePerKm,
-                    //Status = "Draft",
+                    EmployeeName = currentUserId,
+                    TeamLeadApprover = mileageClaim.TeamLeadApprover,
+                    //FinanceApprover = mileageClaim.FinanceApprover,
+                    Wik = mileageClaim.Wik,
+                    StartDate = mileageClaim.StartDate,
+                    EndDate = mileageClaim.EndDate,
+                    RatePerKm = mileageClaim.RatePerKm,
+                    Status = ClaimStatus.SubmittedToTeamLead,
                     CreatedAt = DateTime.UtcNow,
-                    UpdatedAt = DateTime.UtcNow
-                };
+                    UpdatedAt = DateTime.UtcNow,
+                    SubmittedAt = DateTime.UtcNow,
+                    TotalReimbursement = mileageClaim.TotalReimbursement,
+                
+            };
 
-                _applicationDbContext.MileageClaims.Add(claim);
-                await _applicationDbContext.SaveChangesAsync();
+             
+            if (mileageClaim.Trips.Any())
+            {
+                if (mileageClaim.Trips.Any())
+                {
+                    var totalKm = 0.0m;
+                    foreach (var trip in mileageClaim.Trips)
+                    {
+                        totalKm += trip.Kilometers; 
+                        claim.Trips.Add(trip);
+                    }
+                    claim.TotalReimbursement = totalKm * claim.RatePerKm;
+                    claim.TotalKilometers = totalKm;
+                }
+                
+            }
+            await _applicationDbContext.MileageClaims.AddAsync(claim);
+            await _applicationDbContext.SaveChangesAsync();
 
-                return RedirectToAction(nameof(Edit), new { id = claim.Id });
+                return RedirectToAction(nameof(Index));
         //}
 
         //    return View(model);
@@ -122,33 +145,41 @@ namespace MileageExpenseTracker.Controllers
             {
                 return NotFound();
             }
-
-            var model = new MileageClaimViewModel
+            if (claim.Trips.Any())
             {
-                Id = claim.Id,
-                StartDate = claim.StartDate,
-                EndDate = claim.EndDate,
-                RatePerKm = claim.RatePerKm,
-                //Status = claim.Status,
-                TotalKilometers = (decimal)claim.TotalKilometers,
-                TotalReimbursement = (decimal)claim.TotalReimbursement,
-                SubmittedAt = claim.SubmittedAt,
-                //DecisionAt = claim.DecisionAt,
-                //DecisionComment = claim.DecisionComment,
-                Trips = claim.Trips.Select(t => new MileageTripViewModel
+                var model = new MileageClaimViewModel
                 {
-                    Id = t.Id,
-                    TripDate = t.TripDate,
-                    //TripTime = t.TripTime,
-                    Description = t.Description,
-                    StartLocation = t.StartLocation,
-                    EndLocation = t.EndLocation,
-                    Kilometers = t.Kilometers,
-                    Reimbursement = t.Reimbursement
-                }).ToList()
-            };
+                    Id = claim.Id,
+                    StartDate = claim.StartDate,
+                    EndDate = claim.EndDate,
+                    RatePerKm = claim.RatePerKm,
+                    Status = claim.Status.ToString(),
+                    TotalKilometers = (decimal)claim.TotalKilometers,
+                    TotalReimbursement = (decimal)claim.TotalReimbursement,
+                    SubmittedAt = claim.SubmittedAt,
+                    //DecisionAt = claim.DecisionAt,
+                    //DecisionComment = claim.DecisionComment,
+                    Trips = claim.Trips.Select(t => new MileageTripViewModel
+                    {
+                        Id = t.Id,
+                        TripDate = t.TripDate,
+                        //TripTime = t.TripTime,
+                        Description = t.Description,
+                        StartLocation = t.StartLocation,
+                        EndLocation = t.EndLocation,
+                        Kilometers = t.Kilometers,
+                        Reimbursement = t.Reimbursement
+                    }).ToList()
+                };
 
-            return View(model);
+                return View(model);
+            }
+            
+            
+
+               
+
+            return View(claim);
         }
 
         // POST: Mileage/Edit/5
@@ -195,7 +226,7 @@ namespace MileageExpenseTracker.Controllers
 
         // POST: Mileage/AddTrip
         [HttpPost]
-        public async Task<IActionResult> AddTrip(Guid claimId, MileageTripViewModel model)
+        public async Task<IActionResult> AddTrip(Guid claimId, MileageTrip model)
         {
             var claim = await _applicationDbContext.MileageClaims.FindAsync(claimId);
 

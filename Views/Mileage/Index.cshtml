@@ -3,8 +3,122 @@
     ViewData["Title"] = "My Mileage Claims";
 }
 
+
+@* <div class="container" style="max-width: 1280px; margin: 0 auto; padding: 1.5rem;"> *@
+@*     <div class="custom-card mb-4" style="padding: 1.5rem;"> *@
+@*         <div class="d-flex justify-content-between align-items-center"> *@
+@*             <div> *@
+@*                 <h1 class="text-dark-custom" style="font-size: 1.875rem; font-weight: 700; margin-bottom: 0.25rem;">Mileage Claims</h1> *@
+@*                 <p class="text-muted-custom" style="margin: 0; font-size: 1rem;">Track and submit your mileage reimbursement claims</p> *@
+@*             </div> *@
+@*             <a asp-action="Create" class="btn-primary-custom text-decoration-none d-flex align-items-center gap-2"> *@
+@*                 <i class="bi bi-plus-circle"></i> *@
+@*                 New Claim *@
+@*             </a> *@
+@*         </div> *@
+@*     </div> *@
+
+@*     @if (TempData["Success"] != null) *@
+@*     { *@
+@*         <div class="alert alert-success alert-dismissible fade show custom-card mb-4" role="alert"> *@
+@*             @TempData["Success"] *@
+@*             <button type="button" class="btn-close" data-bs-dismiss="alert"></button> *@
+@*         </div> *@
+@*     } *@
+
+@*     @if (!Model.Any()) *@
+@*     { *@
+@*         <div class="custom-card text-center" style="padding: 5rem 1.5rem;"> *@
+@*             <i class="bi bi-file-earmark-text" style="font-size: 3rem; color: var(--gray-300);"></i> *@
+@*             <h4 class="mt-3 text-muted-custom">No Claims Yet</h4> *@
+@*             <p class="text-muted-custom">Create your first mileage claim to get started.</p> *@
+@*             <a asp-action="Create" class="btn-primary-custom text-decoration-none mt-2 d-inline-block">Create Claim</a> *@
+@*         </div> *@
+@*     } *@
+@*     else *@
+@*     { *@
+@*         <div class="custom-card" style="padding: 0;"> *@
+@*             <div class="table-responsive"> *@
+@*                 <table class="table table-hover mb-0"> *@
+@*                     <thead style="background-color: var(--gray-50); border-bottom: 2px solid var(--gray-200);"> *@
+@*                         <tr> *@
+@*                             <th style="padding: 1rem; font-size: 0.875rem; font-weight: 600; color: var(--gray-700);">Period</th> *@
+@*                             <th style="padding: 1rem; font-size: 0.875rem; font-weight: 600; color: var(--gray-700);">Status</th> *@
+@*                             <th style="padding: 1rem; font-size: 0.875rem; font-weight: 600; color: var(--gray-700); text-align: right;">Distance</th> *@
+@*                             <th style="padding: 1rem; font-size: 0.875rem; font-weight: 600; color: var(--gray-700); text-align: right;">Reimbursement</th> *@
+@*                             <th style="padding: 1rem; font-size: 0.875rem; font-weight: 600; color: var(--gray-700); text-align: center;">Trips</th> *@
+@*                             <th style="padding: 1rem; font-size: 0.875rem; font-weight: 600; color: var(--gray-700);">Submitted</th> *@
+@*                             <th style="padding: 1rem; font-size: 0.875rem; font-weight: 600; color: var(--gray-700); text-align: center;">Actions</th> *@
+@*                         </tr> *@
+@*                     </thead> *@
+@*                     <tbody> *@
+@*                         @foreach (var claim in Model) *@
+@*                         { *@
+@*                             <tr style="border-bottom: 1px solid var(--gray-100);"> *@
+@*                                 <td style="padding: 1rem;"> *@
+@*                                     <div style="font-weight: 600; color: var(--gray-900); font-size: 0.875rem;"> *@
+@*                                         @claim.StartDate.ToString("MMM dd") - @claim.EndDate.ToString("MMM dd, yyyy") *@
+@*                                     </div> *@
+@*                                 </td> *@
+@*                                 <td style="padding: 1rem;"> *@
+@*                                     @{ *@
+@*                                         var (statusText, statusClass) = claim.Status.ToString() switch *@
+@*                                         { *@
+@*                                             "Draft" => ("Draft", "status-draft"), *@
+@*                                             "SubmittedToTeamLead" => ("Pending Team Lead", "status-submitted"), *@
+@*                                             "TeamLeadApproved" => ("Team Lead Approved", "status-approved"), *@
+@*                                             "TeamLeadRejected" => ("Team Lead Rejected", "status-rejected"), *@
+@*                                             "SubmittedToFinance" => ("Pending Finance", "status-submitted"), *@
+@*                                             "FinanceApproved" => ("Finance Approved", "status-approved"), *@
+@*                                             "FinanceRejected" => ("Finance Rejected", "status-rejected"), *@
+@*                                             _ => ("Unknown", "status-draft") *@
+@*                                         }; *@
+@*                                     } *@
+@*                                     <span class="status-badge @statusClass">@statusText</span> *@
+@*                                 </td> *@
+@*                                 <td style="padding: 1rem; text-align: right; font-weight: 600; color: var(--gray-900); font-size: 0.875rem;"> *@
+@*                                     @(claim.TotalKilometers?.ToString("N2") ?? "0.00") km *@
+@*                                 </td> *@
+@*                                 <td style="padding: 1rem; text-align: right; font-weight: 600; color: var(--gray-900); font-size: 0.875rem;"> *@
+@*                                     $@(claim.TotalReimbursement?.ToString("N2") ?? "0.00") *@
+@*                                 </td> *@
+@*                                 <td style="padding: 1rem; text-align: center; font-weight: 600; color: var(--gray-900); font-size: 0.875rem;"> *@
+@*                                     @claim.Trips.Count *@
+@*                                 </td> *@
+@*                                 <td style="padding: 1rem; font-size: 0.875rem; color: var(--gray-600);"> *@
+@*                                     @if (claim.SubmittedAt != null) *@
+@*                                     { *@
+@*                                         @claim.SubmittedAt?.ToString("MMM dd, yyyy") *@
+@*                                     } *@
+@*                                     else *@
+@*                                     { *@
+@*                                         <span>—</span> *@
+@*                                     } *@
+@*                                 </td> *@
+@*                                 <td style="padding: 1rem; text-align: center;"> *@
+@*                                     <a asp-action="Edit" asp-route-id="@claim.Id" class="btn btn-sm btn-secondary-custom text-decoration-none"> *@
+@*                                         <i class="bi bi-eye"></i> View *@
+@*                                     </a> *@
+@*                                 </td> *@
+@*                             </tr> *@
+@*                         } *@
+@*                     </tbody> *@
+@*                 </table> *@
+@*             </div> *@
+@*         </div> *@
+@*     } *@
+@* </div> *@
+
+
+@{
+    ViewData["Title"] = "My Mileage Claims";
+    var currentPage = ViewBag.CurrentPage ?? 1;
+    var totalPages = ViewBag.TotalPages ?? 1;
+    var pageSize = ViewBag.PageSize ?? 10;
+    var searchQuery = ViewBag.SearchQuery ?? "";
+}
+
 <div class="container" style="max-width: 1280px; margin: 0 auto; padding: 1.5rem;">
-    <!-- Header Card -->
     <div class="custom-card mb-4" style="padding: 1.5rem;">
         <div class="d-flex justify-content-between align-items-center">
             <div>
@@ -18,7 +132,6 @@
         </div>
     </div>
 
-    <!-- Success/Error Messages -->
     @if (TempData["Success"] != null)
     {
         <div class="alert alert-success alert-dismissible fade show custom-card mb-4" role="alert">
@@ -27,8 +140,7 @@
         </div>
     }
 
-    <!-- Claims List -->
-    @if (!Model.Any())
+    @if (!Model.Any() && string.IsNullOrEmpty(searchQuery))
     {
         <div class="custom-card text-center" style="padding: 5rem 1.5rem;">
             <i class="bi bi-file-earmark-text" style="font-size: 3rem; color: var(--gray-300);"></i>
@@ -39,63 +151,175 @@
     }
     else
     {
-        <div class="d-flex flex-column gap-3">
-            @foreach (var claim in Model)
-            {
-                <div class="custom-card" style="padding: 1.5rem;">
-                    <div class="d-flex justify-content-between align-items-start">
-                        <div class="flex-grow-1">
-                            <div class="d-flex align-items-center gap-3 mb-2">
-                                <h3 class="text-dark-custom mb-0" style="font-size: 1.125rem; font-weight: 600;">
-                                    @claim.StartDate.ToString("MMM dd, yyyy") to @claim.EndDate.ToString("MMM dd, yyyy")
-                                </h3>
-                                @{
-                                    // var statusClass = claim.Status switch
-                                    // {
-                                    //     "Draft" => "status-draft",
-                                    //     "Submitted" => "status-submitted",
-                                    //     "Approved" => "status-approved",
-                                    //     "Rejected" => "status-rejected",
-                                    //     _ => "status-draft"
-                                    // };
-                                }
-                                @* <span class="status-badge @statusClass">@claim.Status</span> *@
-                            </div>
-                            <div class="row" style="font-size: 0.875rem;">
-                                <div class="col-md-4">
-                                    <span class="text-muted-custom">Total Distance:</span>
-                                    <span class="ms-2 text-dark-custom fw-medium">@claim.TotalKilometers.ToString() km</span>
-                                </div>
-                                <div class="col-md-4">
-                                    <span class="text-muted-custom">Reimbursement:</span>
-                                    <span class="ms-2 text-dark-custom fw-medium">$@claim.TotalReimbursement.ToString()</span>
-                                </div>
-                                <div class="col-md-4">
-                                    <span class="text-muted-custom">Trips:</span>
-                                    <span class="ms-2 text-dark-custom fw-medium">@claim.Trips.Count</span>
-                                </div>
-                            </div>
-                            @if (claim.SubmittedAt != null)
-                            {
-                                <p class="text-muted-custom mb-0 mt-2" style="font-size: 0.875rem;">
-                                    Submitted: @claim.SubmittedAt?.ToString("MMM dd, yyyy")
-                                </p>
-                            }
-                            @* @if (claim.DecisionAt != null) *@
-                            @* { *@
-                            @*     <p class="text-muted-custom mb-0 mt-1" style="font-size: 0.875rem;"> *@
-                            @*         Decision: @claim.DecisionAt?.ToString("MMM dd, yyyy") *@
-                            @*     </p> *@
-                            @* } *@
-                        </div>
-                        <a asp-action="Edit" asp-route-id="@claim.Id" class="text-decoration-none fw-medium d-flex align-items-center gap-1"
-                           style="color: var(--blue-600);">
-                            View Details
-                            <i class="bi bi-file-text" style="font-size: 1rem;"></i>
-                        </a>
+        <!-- Search and Filter Bar -->
+        <div class="custom-card mb-4" style="padding: 1.5rem;">
+            <form method="get" asp-action="Index" class="row g-3 align-items-end">
+                <div class="col-md-8">
+                    <label class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;">Search Claims</label>
+                    <div class="input-group">
+                        <span class="input-group-text" style="background-color: white; border-right: none;">
+                            <i class="bi bi-search" style="color: var(--gray-600);"></i>
+                        </span>
+                        <input type="text"
+                               name="search"
+                               value="@searchQuery"
+                               class="form-control form-control-custom"
+                               placeholder="Search by date, status, or amount..."
+                               style="border-left: none;" />
                     </div>
                 </div>
-            }
+                <div class="col-md-2">
+                    <label class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;">Show</label>
+                    <select name="pageSize" class="form-control form-control-custom" onchange="this.form.submit()">
+                        <option value="10" selected="@(pageSize == 10)">10</option>
+                        <option value="25" selected="@(pageSize == 25)">25</option>
+                        <option value="50" selected="@(pageSize == 50)">50</option>
+                        <option value="100" selected="@(pageSize == 100)">100</option>
+                    </select>
+                </div>
+                <div class="col-md-2">
+                    <button type="submit" class="btn-primary-custom w-100">
+                        <i class="bi bi-funnel"></i> Filter
+                    </button>
+                </div>
+            </form>
         </div>
+
+        @if (!Model.Any())
+        {
+            <div class="custom-card text-center" style="padding: 3rem 1.5rem;">
+                <i class="bi bi-search" style="font-size: 2.5rem; color: var(--gray-300);"></i>
+                <h4 class="mt-3 text-muted-custom">No Results Found</h4>
+                <p class="text-muted-custom">No claims match your search criteria. Try adjusting your search.</p>
+                <a asp-action="Index" class="btn-secondary-custom text-decoration-none mt-2 d-inline-block">
+                    <i class="bi bi-x-circle me-1"></i> Clear Search
+                </a>
+            </div>
+        }
+        else
+        {
+            <div class="custom-card" style="padding: 0;">
+                <div class="table-responsive">
+                    <table class="table table-hover mb-0">
+                        <thead style="background-color: var(--gray-50); border-bottom: 2px solid var(--gray-200);">
+                            <tr>
+                                <th style="padding: 1rem; font-size: 0.875rem; font-weight: 600; color: var(--gray-700);">Period</th>
+                                <th style="padding: 1rem; font-size: 0.875rem; font-weight: 600; color: var(--gray-700);">Status</th>
+                                <th style="padding: 1rem; font-size: 0.875rem; font-weight: 600; color: var(--gray-700); text-align: right;">Distance</th>
+                                <th style="padding: 1rem; font-size: 0.875rem; font-weight: 600; color: var(--gray-700); text-align: right;">Reimbursement</th>
+                                <th style="padding: 1rem; font-size: 0.875rem; font-weight: 600; color: var(--gray-700); text-align: center;">Trips</th>
+                                <th style="padding: 1rem; font-size: 0.875rem; font-weight: 600; color: var(--gray-700);">Submitted</th>
+                                <th style="padding: 1rem; font-size: 0.875rem; font-weight: 600; color: var(--gray-700); text-align: center;">Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var claim in Model)
+                            {
+                                <tr style="border-bottom: 1px solid var(--gray-100);">
+                                    <td style="padding: 1rem;">
+                                        <div style="font-weight: 600; color: var(--gray-900); font-size: 0.875rem;">
+                                            @claim.StartDate.ToString("MMM dd") - @claim.EndDate.ToString("MMM dd, yyyy")
+                                        </div>
+                                    </td>
+                                    <td style="padding: 1rem;">
+                                        @{
+                                            var (statusText, statusClass) = claim.Status.ToString() switch
+                                            {
+                                                "Draft" => ("Draft", "status-draft"),
+                                                "SubmittedToTeamLead" => ("Pending Team Lead", "status-submitted"),
+                                                "TeamLeadApproved" => ("Team Lead Approved", "status-approved"),
+                                                "TeamLeadRejected" => ("Team Lead Rejected", "status-rejected"),
+                                                "SubmittedToFinance" => ("Pending Finance", "status-submitted"),
+                                                "FinanceApproved" => ("Finance Approved", "status-approved"),
+                                                "FinanceRejected" => ("Finance Rejected", "status-rejected"),
+                                                _ => ("Unknown", "status-draft")
+                                            };
+                                        }
+                                        <span class="status-badge @statusClass">@statusText</span>
+                                    </td>
+                                    <td style="padding: 1rem; text-align: right; font-weight: 600; color: var(--gray-900); font-size: 0.875rem;">
+                                        @(claim.TotalKilometers?.ToString("N2") ?? "0.00") km
+                                    </td>
+                                    <td style="padding: 1rem; text-align: right; font-weight: 600; color: var(--gray-900); font-size: 0.875rem;">
+                                        $@(claim.TotalReimbursement?.ToString("N2") ?? "0.00")
+                                    </td>
+                                    <td style="padding: 1rem; text-align: center; font-weight: 600; color: var(--gray-900); font-size: 0.875rem;">
+                                        @claim.Trips.Count
+                                    </td>
+                                    <td style="padding: 1rem; font-size: 0.875rem; color: var(--gray-600);">
+                                        @if (claim.SubmittedAt != null)
+                                        {
+                                            @claim.SubmittedAt?.ToString("MMM dd, yyyy")
+                                        }
+                                        else
+                                        {
+                                            <span>—</span>
+                                        }
+                                    </td>
+                                    <td style="padding: 1rem; text-align: center;">
+                                        <a asp-action="Edit" asp-route-id="@claim.Id" class="btn btn-sm btn-secondary-custom text-decoration-none">
+                                            <i class="bi bi-eye"></i> View
+                                        </a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                @if (totalPages > 1)
+                {
+                    <div style="padding: 1.5rem; border-top: 1px solid var(--gray-200); background-color: var(--gray-50);">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div style="font-size: 0.875rem; color: var(--gray-600);">
+                                Showing page @currentPage of @totalPages
+                            </div>
+                            <nav>
+                                <ul class="pagination mb-0" style="gap: 0.25rem;">
+                                    <!-- Previous Button -->
+                                    <li class="page-item @(currentPage == 1 ? "disabled" : "")">
+                                        <a class="page-link"
+                                           href="@Url.Action("Index", new { page = currentPage - 1, pageSize = pageSize, search = searchQuery })"
+                                           style="border: 1px solid var(--gray-300); border-radius: 0.375rem; padding: 0.5rem 0.75rem; margin: 0 0.125rem;">
+                                            <i class="bi bi-chevron-left"></i>
+                                        </a>
+                                    </li>
+
+                                    @for (int i = 1; i <= totalPages; i++)
+                                    {
+                                        if (i == 1 || i == totalPages || (i >= currentPage - 2 && i <= currentPage + 2))
+                                        {
+                                            <li class="page-item @(i == currentPage ? "active" : "")">
+                                                <a class="page-link"
+                                                   href="@Url.Action("Index", new { page = i, pageSize = pageSize, search = searchQuery })"
+                                                   style="border: 1px solid var(--gray-300); border-radius: 0.375rem; padding: 0.5rem 0.75rem; margin: 0 0.125rem; @(i == currentPage ? "background-color: var(--blue-600); color: white; border-color: var(--blue-600);" : "")">
+                                                    @i
+                                                </a>
+                                            </li>
+                                        }
+                                        else if (i == currentPage - 3 || i == currentPage + 3)
+                                        {
+                                            <li class="page-item disabled">
+                                                <span class="page-link" style="border: none; padding: 0.5rem 0.75rem;">...</span>
+                                            </li>
+                                        }
+                                    }
+
+                                    <!-- Next Button -->
+                                    <li class="page-item @(currentPage == totalPages ? "disabled" : "")">
+                                        <a class="page-link"
+                                           href="@Url.Action("Index", new { page = currentPage + 1, pageSize = pageSize, search = searchQuery })"
+                                           style="border: 1px solid var(--gray-300); border-radius: 0.375rem; padding: 0.5rem 0.75rem; margin: 0 0.125rem;">
+                                            <i class="bi bi-chevron-right"></i>
+                                        </a>
+                                    </li>
+                                </ul>
+                            </nav>
+                        </div>
+                    </div>
+                }
+            </div>
+        }
     }
 </div>

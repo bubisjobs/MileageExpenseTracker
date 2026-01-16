@@ -1,53 +1,334 @@
-﻿@model MileageClaimViewModel
-@{
-    ViewData["Title"] = "New Mileage Claim";
-}
+﻿
+
+@* @model MileageExpenseTracker.Models.ViewModels.MileageClaimViewModel *@
+@model MileageExpenseTracker.Models.MileageClaim 
+@* @{ *@
+@*     ViewData["Title"] = "New Mileage Claim"; *@
+@* } *@
+
+@* @section Styles { *@
+@*     <link rel="stylesheet" href="~/css/create.css" /> *@
+@* } *@
+
+@* <div class="container" style="max-width: 1280px; margin: 0 auto; padding: 1.5rem;"> *@
+@*     <!-- Header Card --> *@
+@*     <div class="custom-card mb-4" style="padding: 1.5rem;"> *@
+@*         <a asp-action="Index" class="btn-link-custom mb-3"> *@
+@* <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-short" viewBox="0 0 16 16"> *@
+@*                <path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5" />  *@
+@*            </svg>            Back to Claims *@
+@*         </a> *@
+@*         <h1 class="text-dark-custom" style="font-size: 1.875rem; font-weight: 700; margin: 0;">New Mileage Claim</h1> *@
+@*     </div> *@
+
+@*     <!-- Claim Form --> *@
+@*     <form asp-action="Create" method="post"> *@
+@*         <div class="custom-card" style="padding: 1.5rem;"> *@
+@*             <h2 class="text-dark-custom mb-4" style="font-size: 1.125rem; font-weight: 600;">Claim Information</h2> *@
+
+@*             <div class="row g-3"> *@
+@*                 <!-- Team Lead / Approver --> *@
+@*                 <div class="col-md-6"> *@
+@*                     <label asp-for="TeamLeadApprover" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;">Team Lead / Approver</label> *@
+@*                     <select asp-for="TeamLeadApprover" class="form-control form-control-custom" asp-items="@(new SelectList(ViewBag.Approvers ?? new List<dynamic>(), "Id", "Name"))"> *@
+@*                         <option value="">-- Select Team Lead --</option> *@
+@*                         <option value="Grace">Grace Ackerson</option> *@
+@*                         <option value="Modou">Modou Touray</option> *@
+@*                         <option value="Kirk">Kirk </option> *@
+@*                     </select> *@
+@*                     <span asp-validation-for="TeamLeadApprover" class="text-danger" style="font-size: 0.875rem;"></span> *@
+@*                 </div> *@
+
+@*                 <!-- Work Location (Wik) --> *@
+@*                 <div class="col-md-6"> *@
+@*                     <label asp-for="Wik" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;">Work Location</label> *@
+@*                     <select asp-for="Wik" class="form-control form-control-custom"> *@
+@*                         <option value="">-- Select Location --</option> *@
+@*                         <option value="House">House</option> *@
+@*                         <option value="Work">Work</option> *@
+@*                     </select> *@
+@*                     <span asp-validation-for="Wik" class="text-danger" style="font-size: 0.875rem;"></span> *@
+@*                 </div> *@
+
+@*                 <!-- Start Date --> *@
+@*                 <div class="col-md-4"> *@
+@*                     <label asp-for="StartDate" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;">Start Date</label> *@
+@*                     <input asp-for="StartDate" class="form-control form-control-custom" type="date" /> *@
+@*                     <span asp-validation-for="StartDate" class="text-danger" style="font-size: 0.875rem;"></span> *@
+@*                 </div> *@
+
+@*                 <!-- End Date --> *@
+@*                 <div class="col-md-4"> *@
+@*                     <label asp-for="EndDate" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;">End Date</label> *@
+@*                     <input asp-for="EndDate" class="form-control form-control-custom" type="date" /> *@
+@*                     <span asp-validation-for="EndDate" class="text-danger" style="font-size: 0.875rem;"></span> *@
+@*                 </div> *@
+
+@*                 <!-- Rate per KM --> *@
+@*                 <div class="col-md-4"> *@
+@*                     <label asp-for="RatePerKm" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;">Rate per KM</label> *@
+@*                     <input asp-for="RatePerKm" class="form-control form-control-custom" type="number" step="0.01" disabled /> *@
+@*                     <span asp-validation-for="RatePerKm" class="text-danger" style="font-size: 0.875rem;"></span> *@
+@*                 </div> *@
+@*             </div> *@
+
+@*             <div class="mt-4"> *@
+@*                 <button type="submit" class="btn-primary-custom d-inline-flex align-items-center gap-2"> *@
+@*                     <i class="bi bi-save"></i> *@
+@*                     Create Claim *@
+@*                 </button> *@
+@*             </div> *@
+@*         </div> *@
+@*     </form> *@
+@* </div> *@
+
+@* @section Scripts { *@
+@*     @{ *@
+@*         await Html.RenderPartialAsync("_ValidationScriptsPartial"); *@
+@*     } *@
+
+   
+@* } *@
 
 <div class="container" style="max-width: 1280px; margin: 0 auto; padding: 1.5rem;">
-    <!-- Header Card -->
     <div class="custom-card mb-4" style="padding: 1.5rem;">
         <a asp-action="Index" class="btn-link-custom mb-3">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-short" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5" />
-            </svg>
+           <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-short" viewBox="0 0 16 16"> 
+               <path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5" /> 
+        </svg> 
             Back to Claims
         </a>
         <h1 class="text-dark-custom" style="font-size: 1.875rem; font-weight: 700; margin: 0;">New Mileage Claim</h1>
     </div>
 
-    <!-- Claim Period Form -->
-    <form asp-action="Create" method="post">
-        <div class="custom-card" style="padding: 1.5rem;">
-            <h2 class="text-dark-custom mb-4" style="font-size: 1.125rem; font-weight: 600;">Claim Period</h2>
+    <form asp-action="Create" method="post" id="createClaimForm">
+        <div class="custom-card mb-4" style="padding: 1.5rem;">
+            <h2 class="text-dark-custom mb-4" style="font-size: 1.125rem; font-weight: 600;">Claim Information</h2>
+            
             <div class="row g-3">
+                <div class="col-md-6">
+                    <label asp-for="TeamLeadApprover" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;">Team Lead / Approver</label>
+                    <select asp-for="TeamLeadApprover" class="form-control form-control-custom">
+                        <option value="">-- Select Team Lead --</option>
+                        <option value="1">John</option>
+                        <option value="2">Bubacarr </option>
+                        <option value="3">John Doe</option>
+                    </select>
+                    <span asp-validation-for="TeamLeadApprover" class="text-danger" style="font-size: 0.875rem;"></span>
+                </div>
+
+                <div class="col-md-6">
+                    <label asp-for="Wik" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;">Work Location</label>
+                    <select asp-for="Wik" class="form-control form-control-custom">
+                        <option value="">-- Select Location --</option>
+                        <option value="House">AA</option>
+                        <option value="Work">CP</option>
+                        <option value="Work">Head Office</option>
+                        <option value="Work">MA</option>
+                    </select>
+                    <span asp-validation-for="Wik" class="text-danger" style="font-size: 0.875rem;"></span>
+                </div>
+
                 <div class="col-md-4">
-                    <label asp-for="StartDate" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;"></label>
+                    <label asp-for="StartDate" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;">Start Date</label>
                     <input asp-for="StartDate" class="form-control form-control-custom" type="date" />
                     <span asp-validation-for="StartDate" class="text-danger" style="font-size: 0.875rem;"></span>
                 </div>
+
                 <div class="col-md-4">
-                    <label asp-for="EndDate" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;"></label>
+                    <label asp-for="EndDate" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;">End Date</label>
                     <input asp-for="EndDate" class="form-control form-control-custom" type="date" />
                     <span asp-validation-for="EndDate" class="text-danger" style="font-size: 0.875rem;"></span>
                 </div>
+
                 <div class="col-md-4">
-                    <label asp-for="RatePerKm" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;"></label>
-                    <input asp-for="RatePerKm" class="form-control form-control-custom" type="number" step="0.01" />
+                    <label asp-for="RatePerKm" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;">Rate per KM</label>
+                    <input asp-for="RatePerKm" class="form-control form-control-custom" type="number" step="0.01" onchange="updateTotals()" disabled />
                     <span asp-validation-for="RatePerKm" class="text-danger" style="font-size: 0.875rem;"></span>
                 </div>
+           
+                <input type="hidden" asp-for="TotalReimbursement" id="totalReimbursementForm" /> 
+                <input type="hidden" asp-for="TotalKilometers" id="totalKilometersForm" />
+                
             </div>
-            <div class="mt-4">
-                <button type="submit" class="btn-primary-custom d-inline-flex align-items-center gap-2">
-                    <i class="bi bi-save"></i>
-                    Create Claim
-                </button>
+        </div>
+
+        <div class="custom-card mb-4" style="padding: 1.5rem;">
+            <h2 class="text-dark-custom mb-4" style="font-size: 1.125rem; font-weight: 600;">Trip Details</h2>
+            
+            <div id="tripsContainer">
+                <div class="trip-row mb-3" data-trip-index="0">
+                    <div class="row g-2 align-items-end">
+                        <div class="col-md-2">
+                            <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">Date</label>
+                            <input type="date" name="Trips[0].TripDate" class="form-control form-control-sm" required />
+                        </div>
+                        <div class="col-md-1">
+                            <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">Time</label>
+                            <input type="text" name="Trips[0].TripTime" class="form-control form-control-sm" placeholder="HH:MM" />
+                        </div>
+                        <div class="col-md-2">
+                            <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">Description</label>
+                            <input type="text" name="Trips[0].Description" class="form-control form-control-sm" />
+                        </div>
+                        <div class="col-md-2">
+                            <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">Start Location</label>
+                            <input type="text" name="Trips[0].StartLocation" class="form-control form-control-sm" required />
+                        </div>
+                        <div class="col-md-2">
+                            <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">End Location</label>
+                            <input type="text" name="Trips[0].EndLocation" class="form-control form-control-sm" required />
+                        </div>
+                        <div class="col-md-2">
+                            <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">Kilometers</label>
+                            <input type="number" name="Trips[0].Kilometers" class="form-control form-control-sm trip-kilometers" step="0.1" min="0.1" required onchange="updateTotals()" />
+                        </div>
+                        <div class="col-md-1 text-center">
+                            <button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="removeTrip(this)" style="margin-top: 1.5rem;">
+                                <i class="bi bi-trash"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
             </div>
+
+            <button type="button" class="btn-primary-custom mt-3" onclick="addTripRow()">
+                <i class="bi bi-plus"></i> Add Another Trip
+            </button>
+        </div>
+
+        <div class="custom-card mb-4" style="padding: 1.5rem;">
+            <h2 class="text-dark-custom mb-4" style="font-size: 1.125rem; font-weight: 600;">Summary</h2>
+            <div class="row g-4" style="max-width: 500px;">
+                <div class="col-md-6">
+                    <div class="summary-card-blue">
+                        <p>Total Kilometers</p>
+                        <h3 id="totalKilometers">0.00 km</h3>
+
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="summary-card-green">
+                        <p>Total Reimbursement</p>
+                        <h3 id="totalReimbursement">$0.00</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button type="submit" name="action" value="save" class="btn-secondary-custom">
+                <i class="bi bi-save"></i> Save as Draft
+            </button>
+            <button type="submit" name="action" value="submit" class="btn-primary-custom">
+                <i class="bi bi-send"></i> Create & Submit
+            </button>
         </div>
     </form>
 </div>
 
 @section Scripts {
-    @{
-        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+    <script>
+        let tripIndex = 1;
+        
+        function addTripRow() {
+            const container = document.getElementById('tripsContainer');
+            const newRow = document.createElement('div');
+            newRow.className = 'trip-row mb-3';
+            newRow.setAttribute('data-trip-index', tripIndex);
+            
+            newRow.innerHTML = `
+                <div class="row g-2 align-items-end">
+                    <div class="col-md-2">
+                        <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">Date</label>
+                        <input type="date" name="Trips[${tripIndex}].TripDate" class="form-control form-control-sm" required />
+                    </div>
+                    <div class="col-md-1">
+                        <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">Time</label>
+                        <input type="text" name="Trips[${tripIndex}].TripTime" class="form-control form-control-sm" placeholder="HH:MM" />
+                    </div>
+                    <div class="col-md-2">
+                        <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">Description</label>
+                        <input type="text" name="Trips[${tripIndex}].Description" class="form-control form-control-sm" />
+                    </div>
+                    <div class="col-md-2">
+                        <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">Start Location</label>
+                        <input type="text" name="Trips[${tripIndex}].StartLocation" class="form-control form-control-sm" required />
+                    </div>
+                    <div class="col-md-2">
+                        <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">End Location</label>
+                        <input type="text" name="Trips[${tripIndex}].EndLocation" class="form-control form-control-sm" required />
+                    </div>
+                    <div class="col-md-2">
+                        <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">Kilometers</label>
+                        <input type="number" name="Trips[${tripIndex}].Kilometers" class="form-control form-control-sm trip-kilometers" step="0.1" min="0.1" required onchange="updateTotals()" />
+                    </div>
+                    <div class="col-md-1 text-center">
+                        <button type="button" class="btn btn-sm btn-link text-danger p-0" onclick="removeTrip(this)" style="margin-top: 1.5rem;">
+                            <i class="bi bi-trash"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(newRow);
+            tripIndex++;
+            updateTotals();
+        }
+
+        function removeTrip(button) {
+            const tripRow = button.closest('.trip-row');
+            const container = document.getElementById('tripsContainer');
+            
+            if (container.children.length === 1) {
+                alert('You must have at least one trip.');
+                return;
+            }
+            
+            tripRow.remove();
+            reindexTrips();
+            updateTotals();
+        }
+
+        function reindexTrips() {
+            const container = document.getElementById('tripsContainer');
+            const trips = container.querySelectorAll('.trip-row');
+            
+            trips.forEach((trip, index) => {
+                trip.setAttribute('data-trip-index', index);
+                const inputs = trip.querySelectorAll('input');
+                inputs.forEach(input => {
+                    const name = input.getAttribute('name');
+                    if (name) {
+                        input.setAttribute('name', name.replace(/Trips\[\d+\]/, `Trips[${index}]`));
+                    }
+                });
+            });
+            
+            tripIndex = trips.length;
+        }
+
+        function updateTotals() {
+            const ratePerKm = parseFloat(document.querySelector('[name="RatePerKm"]').value) || 0.50;
+            let totalKm = 0;
+            
+            document.querySelectorAll('.trip-kilometers').forEach(input => {
+                totalKm += parseFloat(input.value) || 0;
+            });
+            
+            const totalReimbursement = totalKm * ratePerKm;
+            
+            document.getElementById('totalKilometers').textContent = totalKm.toFixed(2) + ' km';
+            document.getElementById('totalReimbursement').textContent = '$' + totalReimbursement.toFixed(2);
+            document.getElementsByName('TotalReimbursement').value = totalReimbursement;
+            document.getElementsByName('TotalKilometers').value = totalKm;
+
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            updateTotals();
+        });
+    </script>
     }
-}
