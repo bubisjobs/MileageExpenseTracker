@@ -20,17 +20,17 @@ namespace MileageExpenseTracker.Models
 
         [MaxLength(300)]
         [Display(Name = "Description")]
-        public string Description { get; set; }
+        public string? Description { get; set; }
 
         [Required]
         [MaxLength(250)]
         [Display(Name = "Starting Location")]
-        public string StartLocation { get; set; }
+        public string? StartLocation { get; set; }
 
         [Required]
         [MaxLength(250)]
         [Display(Name = "End Location")]
-        public string EndLocation { get; set; }
+        public string? EndLocation { get; set; }
 
         [Required]
         [Range(0.1, 10000)]
@@ -42,5 +42,6 @@ namespace MileageExpenseTracker.Models
 
         // Navigation property
         public virtual MileageClaim Claim { get; set; }
+        
     }
 }

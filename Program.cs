@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using MileageExpenseTracker.Data;
 using MileageExpenseTracker.Models;
+using MileageExpenseTracker.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -48,7 +49,8 @@ builder.Services.AddRazorPages(options =>
     options.Conventions.AllowAnonymousToAreaPage("Identity", "/Account/ResetPassword");
     options.Conventions.AllowAnonymousToAreaPage("Identity", "/Account/AccessDenied");
 });
-builder.Services.AddTransient<IEmailSender, NoOpEmailSender>();
+//builder.Services.AddTransient<IEmailSender, NoOpEmailSender>();
+builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
 

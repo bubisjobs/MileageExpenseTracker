@@ -1,0 +1,484 @@
+﻿@model IEnumerable<User>
+
+@{
+    ViewData["Title"] = "User Management";
+}
+
+
+<div class="container" style="max-width: 1400px; margin: 0 auto; padding: 1.5rem;">
+    <!-- Header -->
+    <div class="custom-card mb-4" style="padding: 1.5rem;">
+        <div class="d-flex justify-content-between align-items-center">
+            <div>
+                <h1 class="text-dark-custom" style="font-size: 1.875rem; font-weight: 700; margin-bottom: 0.25rem;">User Management</h1>
+                <p class="text-muted-custom" style="margin: 0; font-size: 1rem;">Manage users, roles, and permissions</p>
+            </div>
+            <button type="button" class="btn-primary-custom d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#addUserModal">
+                <i class="bi bi-person-plus"></i>
+                Add New User
+            </button>
+        </div>
+    </div>
+
+    <!-- Role Filter Tabs -->
+    <div class="custom-card mb-4" style="padding: 1rem 1.5rem;">
+        <div class="d-flex gap-2 flex-wrap">
+            <button class="btn btn-sm role-filter-btn active" data-role="all" style="padding: 0.5rem 1rem; border-radius: 0.375rem; border: 1px solid #d1d5db; background: white; font-weight: 500;">
+                All Users
+            </button>
+            <button class="btn btn-sm role-filter-btn" data-role="Employee" style="padding: 0.5rem 1rem; border-radius: 0.375rem; border: 1px solid #d1d5db; background: white; font-weight: 500;">
+                Employees
+            </button>
+            <button class="btn btn-sm role-filter-btn" data-role="TeamLead" style="padding: 0.5rem 1rem; border-radius: 0.375rem; border: 1px solid #d1d5db; background: white; font-weight: 500;">
+                Team Leads
+            </button>
+            <button class="btn btn-sm role-filter-btn" data-role="Finance" style="padding: 0.5rem 1rem; border-radius: 0.375rem; border: 1px solid #d1d5db; background: white; font-weight: 500;">
+                Finance
+            </button>
+            <button class="btn btn-sm role-filter-btn" data-role="Admin" style="padding: 0.5rem 1rem; border-radius: 0.375rem; border: 1px solid #d1d5db; background: white; font-weight: 500;">
+                Administrators
+            </button>
+        </div>
+    </div>
+
+    <!-- DataTable Card -->
+    <div class="custom-card" style="padding: 1.5rem;">
+        <table id="usersTable" class="table table-hover table-striped" style="width:100%">
+            <thead style="background-color: var(--gray-50);">
+                <tr>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Role</th>
+                    <th>Status</th>
+                    <th>Created Date</th>
+                    <th>Last Login</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var user in Model)
+                {
+                    <tr data-user-id="@user.Id">
+                        <td>
+                            <div class="d-flex align-items-center gap-2">
+                                <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">
+                                    @(user.FirstName?.Substring(0, 1))@(user.LastName?.Substring(0, 1))
+                                </div>
+                                <div>
+                                    <div style="font-weight: 600; color: var(--gray-900);">@user.FirstName @user.LastName</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td>@user.Email</td>
+                        <td data-role="@user.Role">
+                            @{
+                                var roleClass = user.Role switch
+                                {
+                                    "Admin" => "bg-danger bg-opacity-10 text-danger",
+                                    "Finance" => "bg-success bg-opacity-10 text-success",
+                                    "TeamLead" => "bg-primary bg-opacity-10 text-primary",
+                                    _ => "bg-secondary bg-opacity-10 text-secondary"
+                                };
+                            }
+                            <span class="badge @roleClass" style="font-size: 0.75rem; padding: 0.375rem 0.75rem;">@user.Role</span>
+                        </td>
+                        <td>
+                            @if (user.IsActive == true) 
+                            { 
+                                <span class="badge bg-success bg-opacity-10 text-success" style="font-size: 0.75rem; padding: 0.375rem 0.75rem;"> 
+                                   <i class="bi bi-check-circle me-1"></i>Active 
+                                 </span> 
+                             } 
+                             else 
+                             {
+                                 <span class="badge bg-danger bg-opacity-10 text-danger" style="font-size: 0.75rem; padding: 0.375rem 0.75rem;"> 
+                                     <i class="bi bi-x-circle me-1"></i>Inactive 
+                                 </span>
+                             }
+                        </td>
+                        <td data-order="@user.CreatedAt.ToString("yyyy-MM-dd")">@user.CreatedAt.ToString("MMM dd, yyyy")</td>
+                        <td data-order="@(user.LastLoginAt?.ToString("yyyy-MM-dd") ?? "")">
+                            @if (user.LastLoginAt != null)
+                            {
+                                @user.LastLoginAt?.ToString("MMM dd, yyyy hh:mm tt")
+                            }
+                            else
+                            {
+                                <span class="text-muted">Never</span>
+                            }
+                        </td>
+                        <td>
+                            <div class="d-flex gap-1">
+                                <button type="button" class="btn btn-sm btn-secondary-custom" onclick="editUser('@user.Email')" title="Edit">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                                        <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.5.5 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11z" />
+                                    </svg>
+                                </button>
+
+                                <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteUser('@user.Id', '@user.FirstName @user.LastName')" title="Delete">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                        <path d="M2.146 2.146a.5.5 0 0 1 .708 0L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854a.5.5 0 0 1 0-.708z" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Add User Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 0.75rem; border: none; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);">
+            <div class="modal-header" style="border-bottom: 1px solid #e5e7eb; padding: 1.5rem;">
+                <h5 class="modal-title" id="addUserModalLabel" style="font-weight: 700; color: var(--gray-900);">
+                    <i class="bi bi-person-plus me-2" style="color: #667eea;"></i>Add New User
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" style="padding: 1.5rem;">
+                <form id="addUserForm">
+                    @Html.AntiForgeryToken()
+
+                    <div class="mb-3">
+                        <label for="firstName" class="form-label fw-medium">First Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-custom" id="firstName" name="firstName" required placeholder="Enter first name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="lastName" class="form-label fw-medium">Last Name <span class="text-danger">*</span></label>
+                        <input type="text" class="form-control form-control-custom" id="lastName" name="lastName" required placeholder="Enter last name">
+                    </div>
+                    <div class="mb-3">
+                        <label for="email" class="form-label fw-medium">Email Address <span class="text-danger">*</span></label>
+                        <input type="email" class="form-control form-control-custom" id="email" name="email" required placeholder="user@company.com">
+                        <small class="text-muted">An invitation email will be sent to this address</small>
+                    </div>
+                    <div class="mb-3">
+                        <label for="role" class="form-label fw-medium">Role <span class="text-danger">*</span></label>
+                        <select class="form-control form-control-custom" id="role" name="role" required>
+                            <option value="">-- Select Role --</option>
+                            <option value="Employee">Employee</option>
+                            <option value="TeamLead">Team Lead</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Admin">Administrator</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer" style="border-top: 1px solid #e5e7eb; padding: 1.5rem;">
+                <button type="button" class="btn btn-secondary-custom" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary-custom" onclick="submitAddUser()">
+                    <i class="bi bi-send me-1"></i>Send Invitation
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit User Modal -->
+<div class="modal fade" id="editUserModal" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 0.75rem; border: none; box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1);">
+            <div class="modal-header" style="border-bottom: 1px solid #e5e7eb; padding: 1.5rem;">
+                <h5 class="modal-title" style="font-weight: 700; color: var(--gray-900);">
+                    <i class="bi bi-pencil me-2" style="color: #667eea;"></i>Edit User
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" style="padding: 1.5rem;">
+                <form id="editUserForm">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" id="editUserId" name="userId">
+                    <div class="mb-3">
+                        <label for="editFirstName" class="form-label fw-medium">First Name</label>
+                        <input type="text" class="form-control form-control-custom" id="editFirstName" name="firstName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editLastName" class="form-label fw-medium">Last Name</label>
+                        <input type="text" class="form-control form-control-custom" id="editLastName" name="lastName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editEmail" class="form-label fw-medium">Email</label>
+                        <input type="email" class="form-control form-control-custom" id="editEmail" name="email" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editRole" class="form-label fw-medium">Role</label>
+                        <select class="form-control form-control-custom" id="editRole" name="role" required>
+                            <option value="Employee">Employee</option>
+                            <option value="TeamLead">Team Lead</option>
+                            <option value="Finance">Finance</option>
+                            <option value="Admin">Administrator</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-medium">Status</label>
+                        <div class="form-check form-switch">
+                            <input class="form-check-input" type="checkbox" id="editIsActive" name="isActive">
+                            <label class="form-check-label" for="editIsActive">Active</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer" style="border-top: 1px solid #e5e7eb; padding: 1.5rem;">
+                <button type="button" class="btn btn-secondary-custom" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary-custom" onclick="submitEditUser()">
+                    <i class="bi bi-save me-1"></i>Save Changes
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .role-filter-btn.active {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+        color: white !important;
+        border-color: #667eea !important;
+    }
+
+    .role-filter-btn:hover {
+        background-color: #f3f4f6 !important;
+        border-color: #9ca3af !important;
+    }
+
+    .role-filter-btn.active:hover {
+        background: linear-gradient(135deg, #5568d3 0%, #6a4291 100%) !important;
+    }
+</style>
+
+<!-- jQuery -->
+<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+
+<script>
+    var usersTable;
+
+    $(document).ready(function() {
+        // Initialize DataTable
+        usersTable = $('#usersTable').DataTable({
+            paging: true,
+            pageLength: 10,
+            lengthMenu: [[10, 25, 50, 100, -1], [10, 25, 50, 100, "All"]],
+            order: [[4, 'desc']], // Sort by Created Date descending
+            searching: true,
+            dom: '<"row"<"col-sm-12 col-md-6"l><"col-sm-12 col-md-6"f>>' +
+                 '<"row"<"col-sm-12 col-md-6"B>>' +
+                 '<"row"<"col-sm-12"tr>>' +
+                 '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
+            responsive: true,
+            language: {
+                search: "Search users:",
+                lengthMenu: "Show _MENU_ users",
+                info: "Showing _START_ to _END_ of _TOTAL_ users",
+                infoEmpty: "No users available",
+                infoFiltered: "(filtered from _MAX_ total users)",
+                zeroRecords: "No matching users found"
+            },
+            columnDefs: [
+                { targets: 6, orderable: false, className: 'text-center' }
+            ]
+        });
+
+        // Role Filter
+        $('.role-filter-btn').on('click', function() {
+            $('.role-filter-btn').removeClass('active');
+            $(this).addClass('active');
+
+            var role = $(this).data('role');
+
+            if (role === 'all') {
+                $.fn.dataTable.ext.search.pop();
+            } else {
+                $.fn.dataTable.ext.search.pop();
+                $.fn.dataTable.ext.search.push(function(settings, data, dataIndex) {
+                    var rowRole = $(usersTable.row(dataIndex).node()).find('[data-role]').data('role');
+                    return rowRole === role;
+                });
+            }
+
+            usersTable.draw();
+        });
+    });
+
+    // Add User
+    function submitAddUser() {
+        const form = document.getElementById('addUserForm');
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        const formData = {
+            firstName: document.getElementById('firstName').value,
+            lastName: document.getElementById('lastName').value,
+            email: document.getElementById('email').value,
+            role: document.getElementById('role').value
+        };
+
+        Swal.fire({
+            title: 'Sending Invitation...',
+            text: 'Please wait while we create the user account and send the invitation email.',
+            allowOutsideClick: false,
+            didOpen: () => Swal.showLoading()
+        });
+
+        fetch('/Admin/CreateUser', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'User Created!',
+                    html: `
+                        <p>User account has been created successfully.</p>
+                        <p class="text-muted">An invitation email has been sent to <strong>${formData.email}</strong></p>
+                    `,
+                    confirmButtonColor: '#10b981'
+                }).then(() => {
+                    $('#addUserModal').modal('hide');
+                    form.reset();
+                    window.location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message || 'Failed to create user',
+                    confirmButtonColor: '#ef4444'
+                });
+            }
+        })
+        .catch(error => {
+            Swal.fire({
+                icon: 'error',
+                title: 'Error',
+                text: 'An error occurred while creating the user',
+                confirmButtonColor: '#ef4444'
+            });
+        });
+    }
+
+    // Edit User
+    function editUser(email) {
+    console.log("User ID:", email); 
+
+        // console.log(userId)
+        fetch(`/Admin/GetUser/${email}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('editUserId').value = data.user.id;
+                    document.getElementById('editFirstName').value = data.user.firstName;
+                    document.getElementById('editLastName').value = data.user.lastName;
+                    document.getElementById('editEmail').value = data.user.email;
+                    document.getElementById('editRole').value = data.user.role;
+                    document.getElementById('editIsActive').checked = data.user.isActive;
+
+                    $('#editUserModal').modal('show');
+                } else {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Error',
+                        text: 'Failed to load user data'
+                    });
+                }
+            });
+    }
+
+    function submitEditUser() {
+        const form = document.getElementById('editUserForm');
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        const formData = {
+            userId: document.getElementById('editUserId').value,
+            firstName: document.getElementById('editFirstName').value,
+            lastName: document.getElementById('editLastName').value,
+            email: document.getElementById('editEmail').value,
+            role: document.getElementById('editRole').value,
+            isActive: document.getElementById('editIsActive').checked
+        };
+
+        fetch('/Admin/UpdateUser', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                Swal.fire({
+                    icon: 'success',
+                    title: 'Updated!',
+                    text: 'User has been updated successfully.',
+                    confirmButtonColor: '#10b981'
+                }).then(() => {
+                    $('#editUserModal').modal('hide');
+                    window.location.reload();
+                });
+            } else {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Error',
+                    text: data.message || 'Failed to update user'
+                });
+            }
+        });
+    }
+
+    // Delete User
+    function deleteUser(userId, userName) {
+        Swal.fire({
+            title: 'Delete User?',
+            html: `Are you sure you want to delete <strong>${userName}</strong>?<br><small class="text-muted">This action cannot be undone.</small>`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef4444',
+            cancelButtonColor: '#6b7280',
+            confirmButtonText: 'Yes, Delete',
+            cancelButtonText: 'Cancel'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                fetch(`/Admin/DeleteUser/${userId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                    }
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'Deleted!',
+                            text: 'User has been deleted.',
+                            confirmButtonColor: '#10b981'
+                        }).then(() => window.location.reload());
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Error',
+                            text: data.message || 'Failed to delete user'
+                        });
+                    }
+                });
+            }
+        });
+    }
+</script>
+

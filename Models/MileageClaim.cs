@@ -1,4 +1,5 @@
-﻿using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding.Validation;
+using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 
 namespace MileageExpenseTracker.Models
@@ -10,7 +11,7 @@ namespace MileageExpenseTracker.Models
         // ========= Ownership / Routing =========
 
         // Claim owner (logged-in employee)
-        [Required]
+        //[Required]
         public string? EmployeeName { get; set; } = default!;
 
         // Team lead selected from dropdown (first approver)
@@ -48,7 +49,7 @@ namespace MileageExpenseTracker.Models
 
         // ========= Workflow =========
         // Replace your string Status with an enum-driven workflow (strongly recommended)
-        [Required]
+        //[Required]
         public ClaimStatus Status { get; set; } = ClaimStatus.Draft;
 
         public DateTime? SubmittedAt { get; set; }
@@ -67,7 +68,8 @@ namespace MileageExpenseTracker.Models
         public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
 
         // ========= Navigation =========
-
+        [ValidateNever]
         public virtual ICollection<MileageTrip> Trips { get; set; } = new List<MileageTrip>();
     }
+    
 }

@@ -16,7 +16,9 @@
 
         // Finance decision
         FinanceApproved = 6,
-        FinanceRejected = 7
+        FinanceRejected = 7,
+        Approved = 8,
+        Rejected = 9
     }
 }
 

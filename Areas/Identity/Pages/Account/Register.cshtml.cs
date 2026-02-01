@@ -131,6 +131,7 @@ namespace MileageExpenseTracker.Areas.Identity.Pages.Account
                 user.Email = user.UserName;
                 user.FirstName = Input.FirstName;
                 user.LastName = Input.LastName;
+                //user.IsActive
                 if (String.IsNullOrEmpty(user.Role))
                 {
                     user.Role = "Admin";
