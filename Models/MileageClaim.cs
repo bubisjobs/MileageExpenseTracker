@@ -14,6 +14,8 @@ namespace MileageExpenseTracker.Models
         //[Required]
         public string? EmployeeName { get; set; } = default!;
 
+        public string? Email { get; set; } = default!;
+
         // Team lead selected from dropdown (first approver)
         [Required]
         public string? TeamLeadApprover { get; set; } = default!;

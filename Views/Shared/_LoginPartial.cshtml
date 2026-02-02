@@ -18,10 +18,16 @@
             </button>
             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
                 <li>
-                    <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/Index">
+                    <a class="dropdown-item">
                         <i class="bi bi-person me-2"></i> @User.Identity?.Name
                     </a>
                 </li>
+            <li>
+              
+                <a class="dropdown-item" asp-area="Identity" asp-page="/Account/Manage/ChangePassword">
+                    <i class="bi bi-person me-2"></i> Change Password
+                </a>
+            </li>
                 @* <li> *@
                 @*     <a class="dropdown-item" href="#"> *@
                 @*         <i class="bi bi-gear me-2"></i> Settings *@

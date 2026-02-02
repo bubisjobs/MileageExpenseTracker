@@ -25,28 +25,18 @@ namespace MileageExpenseTracker.Controllers
 
             var claims = await _applicationDbContext.MileageClaims
                 .Include(x => x.Trips)
-                ////.Where(c => c.EmployeeId == currentUserId)
-                //.OrderByDescending(c => c.CreatedAt)
-                //.Select(c => new
-                //{
-                //    c.Id,
-                //    c.StartDate,
-                //    c.EndDate,
-                //    c.Status,
-                //    c.TotalKilometers,
-                //    c.TotalReimbursement,
-                //    c.SubmittedAt,
-                //    //c.DecisionAt,
-                //    TripCount = c.Trips.Count
-                //})
+                .Where(c => c.Email  == currentUserId || c.TeamLeadApprover == currentUserId || c.FinanceApprover == currentUserId)
                 .ToListAsync();
 
             return View(claims);
         }
 
         // GET: Mileage/Create
-        public IActionResult Create()
+        public async Task<IActionResult> Create()
         {
+
+            var teamLeaad = await _applicationDbContext.Users.Where(x => x.Role == SD.Roles.TeamLead).ToListAsync();
+
             var model = new MileageClaim
             {
                 StartDate = DateTime.Today,
@@ -82,6 +72,7 @@ namespace MileageExpenseTracker.Controllers
                     {
                         Id = Guid.NewGuid(),
                         EmployeeName = EmployfullName,
+                        Email = currentUserId,
                         TeamLeadApprover = mileageClaim.TeamLeadApprover,
                         //FinanceApprover = mileageClaim.FinanceApprover,
                         Wik = mileageClaim.Wik,
@@ -128,6 +119,7 @@ namespace MileageExpenseTracker.Controllers
             var claim = await _applicationDbContext.MileageClaims
                 .Include(c => c.Trips)
                 .FirstOrDefaultAsync(c => c.Id == id);
+               //claim?.RatePerKm = 0.50m;
 
             if (claim == null)
             {
@@ -311,130 +303,7 @@ namespace MileageExpenseTracker.Controllers
         }
 
 
-        //public async Task<IActionResult> ApproveByTeamLead(Guid id, MileageClaim mileageClaim)
-        //{
-        //    try
-        //    {
-        //        var claim = await _applicationDbContext.MileageClaims
-        //        //.Include(c => c.Trips)
-        //        .FirstOrDefaultAsync(c => c.Id == id);
-        //        if (claim != null)
-        //        {
-        //            claim.Status = ClaimStatus.TeamLeadApproved;
-        //            claim.TeamLeadComment = mileageClaim.TeamLeadComment;
-        //            mileageClaim.TeamLeadReviewedAt = DateTime.Now;
-
-        //            claim.SubmittedAt = DateTime.UtcNow;
-        //            claim.UpdatedAt = DateTime.UtcNow;
-
-        //            await _applicationDbContext.SaveChangesAsync();
-
-        //            TempData["Success"] = "Claim Approved by Team Lead.";
-        //            return Json(new { success = true });
-        //        }
-        //    }
-        //    catch (Exception)
-        //    {
-
-        //        return Json(new { success = false, message = "Something went wrong." });
-
-        //    }
-        //    return Json(new { success = false, message = "Something went wrong." });
-        //}
-
-        //public async Task<IActionResult> ApproveByFinance(Guid id, MileageClaim mileageClaim)
-        //{
-        //    try
-        //    {
-        //        var claim = await _applicationDbContext.MileageClaims
-        //        //.Include(c => c.Trips)
-        //        .FirstOrDefaultAsync(c => c.Id == id);
-        //        if (claim != null)
-        //        {
-        //            claim.Status = ClaimStatus.FinanceApproved;
-        //            claim.FinanceComment = mileageClaim.FinanceComment;
-        //            mileageClaim.FinanceReviewedAt = DateTime.Now;
-
-        //            claim.SubmittedAt = DateTime.UtcNow;
-        //            claim.UpdatedAt = DateTime.UtcNow;
-
-        //            await _applicationDbContext.SaveChangesAsync();
-
-        //            TempData["Success"] = "Claim Approved by Team Lead.";
-        //            return Json(new { success = true });
-        //        }
-        //    }
-        //    catch (Exception)
-        //    {
-
-        //        return Json(new { success = false, message = "Something went wrong." });
-
-        //    }
-        //    return Json(new { success = false, message = "Something went wrong." });
-        //}
-
-        //public async Task<IActionResult> RejectedByFinance(Guid id, MileageClaim mileageClaim)
-        //{
-        //    try
-        //    {
-        //        var claim = await _applicationDbContext.MileageClaims
-        //        //.Include(c => c.Trips)
-        //        .FirstOrDefaultAsync(c => c.Id == id);
-        //        if (claim != null)
-        //        {
-        //            claim.Status = ClaimStatus.FinanceRejected;
-        //            claim.FinanceComment = mileageClaim.FinanceComment;
-        //            mileageClaim.FinanceReviewedAt = DateTime.Now;
-
-        //            claim.SubmittedAt = DateTime.UtcNow;
-        //            claim.UpdatedAt = DateTime.UtcNow;
-
-        //            await _applicationDbContext.SaveChangesAsync();
-
-        //            TempData["Success"] = "Claim Approved by Team Lead.";
-        //            return Json(new { success = true });
-        //        }
-        //    }
-        //    catch (Exception)
-        //    {
-
-        //        return Json(new { success = false, message = "Something went wrong." });
-
-        //    }
-        //    return Json(new { success = false, message = "Something went wrong." });
-        //}
-
-        //public async Task<IActionResult> RejectedByTeamLead(Guid id, MileageClaim mileageClaim)
-        //{
-        //    try
-        //    {
-        //        var claim = await _applicationDbContext.MileageClaims
-        //        //.Include(c => c.Trips)
-        //        .FirstOrDefaultAsync(c => c.Id == id);
-        //        if (claim != null)
-        //        {
-        //            claim.Status = ClaimStatus.TeamLeadRejected;
-        //            claim.TeamLeadComment = mileageClaim.FinanceComment;
-        //            mileageClaim.TeamLeadReviewedAt = DateTime.Now;
-
-        //            claim.SubmittedAt = DateTime.UtcNow;
-        //            claim.UpdatedAt = DateTime.UtcNow;
-
-        //            await _applicationDbContext.SaveChangesAsync();
-
-        //            TempData["Success"] = "Claim Approved by Team Lead.";
-        //            return Json(new { success = true });
-        //        }
-        //    }
-        //    catch (Exception)
-        //    {
-
-        //        return Json(new { success = false, message = "Something went wrong." });
-
-        //    }
-        //    return Json(new { success = false, message = "Something went wrong." });
-        //}
-
+       
 
         
         [HttpPost]

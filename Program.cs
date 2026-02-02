@@ -14,6 +14,7 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
+
 // Identity (with Roles)
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
@@ -34,7 +35,8 @@ builder.Services.AddAuthorization(options =>
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Identity/Account/Login";
-    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+    options.AccessDeniedPath = "/AccessDenied";
+    //op
 });
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
@@ -44,10 +46,10 @@ builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages(options =>
 {
     options.Conventions.AllowAnonymousToAreaPage("Identity", "/Account/Login");
-    options.Conventions.AllowAnonymousToAreaPage("Identity", "/Account/Register");
+    //options.Conventions.AllowAnonymousToAreaPage("Identity", "/Account/Register");
     options.Conventions.AllowAnonymousToAreaPage("Identity", "/Account/ForgotPassword");
     options.Conventions.AllowAnonymousToAreaPage("Identity", "/Account/ResetPassword");
-    options.Conventions.AllowAnonymousToAreaPage("Identity", "/Account/AccessDenied");
+
 });
 //builder.Services.AddTransient<IEmailSender, NoOpEmailSender>();
 builder.Services.AddScoped<IEmailService, EmailService>();

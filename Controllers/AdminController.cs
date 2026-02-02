@@ -1,13 +1,18 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.WebUtilities;
 using Microsoft.EntityFrameworkCore;
 using MileageExpenseTracker.Data;
 using MileageExpenseTracker.Models;
+using MileageExpenseTracker.SD;
 using MileageExpenseTracker.Services;
 using System.Security.Cryptography;
+using System.Text;
 
 namespace MileageExpenseTracker.Controllers
 {
+    [Authorize(Roles = "Admin,Finance")]
     public class AdminController : Controller
     {
         private readonly UserManager<User> _userManager;
@@ -40,44 +45,7 @@ namespace MileageExpenseTracker.Controllers
         [HttpPost]
         public async Task<IActionResult> CreateUser([FromBody] User UserRequest)
         {
-            //try
-            //{
-            //    // Validate email doesn't already exist
-            //    if (await _context.Users.AnyAsync(u => u.Email == UserRequest.Email))
-            //    {
-            //        return Json(new { success = false, message = "A user with this email already exists" });
-            //    }
-
-            //    // Create new user
-            //    var user = new User
-            //    {
-            //        Id = Guid.NewGuid(),
-            //        FirstName = UserRequest.FirstName,
-            //        LastName = UserRequest.LastName,
-            //        Email = UserRequest.Email,
-            //        Role = UserRequest.Role,
-            //        IsActive = true,
-            //        CreatedAt = DateTime.UtcNow,
-            //        EmailVerified = false
-            //    };
-
-            //    // Generate invitation token
-            //    var invitationToken = Guid.NewGuid().ToString();
-            //    user.InvitationToken = invitationToken;
-            //    user.InvitationTokenExpiry = DateTime.UtcNow.AddDays(7); // 7 days to accept
-
-            //    _context.Users.Add(user);
-            //    await _context.SaveChangesAsync();
-
-            //    // Send invitation email
-            //    await SendInvitationEmail(user, invitationToken);
-
-            //    return Json(new { success = true, message = "User created and invitation sent successfully" });
-            //}
-            //catch (Exception ex)
-            //{
-            //    return Json(new { success = false, message = $"Error: {ex.Message}" });
-            //}
+           
 
             try
             {
@@ -94,7 +62,7 @@ namespace MileageExpenseTracker.Controllers
                 }
 
                 // Generate a temporary password
-                var tempPassword = SD.Password.TemporaryPassword;
+                var tempPassword = Password.TemporaryPassword;
 
                 // Create user
                 var user = new User
@@ -122,22 +90,13 @@ namespace MileageExpenseTracker.Controllers
 
                 // Generate password reset token for invitation
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);
-                var inviteUrl = Url.Action("AcceptInvitation", "Account", new { userId = user.Id, token }, Request.Scheme);
 
-                // Send invitation email
-                var emailBody = $@"
-            <html>
-            <body>
-                <h2>Hello {user.FirstName} {user.LastName},</h2>
-                <p>You've been invited to join as a <strong>{user.Role}</strong>.</p>
-                <p>
-                    <a href='{inviteUrl}' style='background:#667eea;color:#fff;padding:10px 20px;border-radius:5px;text-decoration:none;'>Set Your Password</a>
-                </p>
-                <p>This link will expire soon. If you did not expect this, please ignore this email.</p>
-            </body>
-            </html>
-        ";
-                await _emailService.SendEmailAsync(user.Email, "Invitation to Mileage Tracker", emailBody);
+                // ENCODE the token for safe URL transmission
+                var encodedToken = WebEncoders.Base64UrlEncode(Encoding.UTF8.GetBytes(token));
+
+                // Send invitation email with ENCODED token
+                await SendInvitationEmail(user, encodedToken);
+
 
                 return Json(new { success = true, message = "User created and invitation sent successfully" });
             }
@@ -220,20 +179,19 @@ namespace MileageExpenseTracker.Controllers
         }
 
         // DELETE: Admin/DeleteUser/{id}
-        [HttpDelete]
-        public async Task<IActionResult> DeleteUser(string id)
+        [HttpDelete("Admin/DeleteUser/{userEmail}")]
+        public async Task<IActionResult> DeleteUser(string userEmail)
         {
             try
             {
-                var user = await _context.Users.FindAsync(id);
-
+                var user = await _context.Users.SingleOrDefaultAsync(x => x.Email == userEmail);
                 if (user == null)
                 {
                     return Json(new { success = false, message = "User not found" });
                 }
 
                 // Check if user has any claims
-                var hasClaims = await _context.MileageClaims.AnyAsync(c => c.EmployeeName == id);
+                var hasClaims = await _context.MileageClaims.AnyAsync(c => c.Email == userEmail);
                 if (hasClaims)
                 {
                     return Json(new { success = false, message = "Cannot delete user with existing mileage claims. Deactivate instead." });
@@ -253,48 +211,20 @@ namespace MileageExpenseTracker.Controllers
         // Send Invitation Email
         private async Task SendInvitationEmail(User user, string token)
         {
-            var inviteUrl = Url.Action("AcceptInvitation", "Account", new { token }, Request.Scheme);
 
-            var emailBody = $@"
-                <html>
-                <head>
-                    <style>
-                        body {{ font-family: Arial, sans-serif; line-height: 1.6; color: #333; }}
-                        .container {{ max-width: 600px; margin: 0 auto; padding: 20px; }}
-                        .header {{ background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 30px; text-align: center; border-radius: 8px 8px 0 0; }}
-                        .content {{ background: #f9fafb; padding: 30px; border-radius: 0 0 8px 8px; }}
-                        .button {{ display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 12px 30px; text-decoration: none; border-radius: 6px; margin: 20px 0; }}
-                        .footer {{ text-align: center; color: #6b7280; font-size: 12px; margin-top: 20px; }}
-                    </style>
-                </head>
-                <body>
-                    <div class='container'>
-                        <div class='header'>
-                            <h1>Welcome to Mileage Tracker</h1>
-                        </div>
-                        <div class='content'>
-                            <h2>Hello {user.FirstName} {user.LastName},</h2>
-                            <p>You've been invited to join our Mileage Tracker system as a <strong>{user.Role}</strong>.</p>
-                            <p>To get started, please click the button below to set up your account and create your password:</p>
-                            <div style='text-align: center;'>
-                                <a href='{inviteUrl}' class='button'>Accept Invitation</a>
-                            </div>
-                            <p><small>This invitation link will expire in 7 days.</small></p>
-                            <p>If you have any questions, please contact your administrator.</p>
-                        </div>
-                        <div class='footer'>
-                            <p>&copy; 2024 Mileage Tracker. All rights reserved.</p>
-                        </div>
-                    </div>
-                </body>
-                </html>
-            ";
+            // BEFORE (incorrect)
+            var resetUrl = $"{Request.Scheme}://{Request.Host}/Identity/Account/ResetPassword" +
+                $"?code={Uri.EscapeDataString(token)}&email={Uri.EscapeDataString(user.Email)}";
+
+
+            var emailBody = EmailBody.ResetPasswordTemplate(user.FirstName, user.LastName, user.Role, resetUrl);
 
             await _emailService.SendEmailAsync(
                 user.Email,
-                "Invitation to Mileage Tracker",
+                "Reset your Mileage Tracker password",
                 emailBody
             );
+
         }
     }
 

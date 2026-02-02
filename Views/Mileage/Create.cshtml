@@ -1,4 +1,8 @@
 ﻿@model MileageExpenseTracker.Models.MileageClaim
+@{
+    ViewData["Title"] = "Add Claim";
+}
+
 
 <div class="container" style="max-width: 1280px; margin: 0 auto; padding: 1.5rem;">
     <div class="custom-card mb-4" style="padding: 1.5rem;">
@@ -8,7 +12,7 @@
             </svg>
             Back to Claims
         </a>
-        <h1 class="text-dark-custom" style="font-size: 1.875rem; font-weight: 700; margin: 0;">New Mileage Claim</h1>
+        <h1 class="text-dark-custom" style="font-size: 1.875rem; font-weight: 700; margin: 0;color: white;">New Mileage Claim</h1>
     </div>
    
     <form asp-action="Create" method="post" id="createClaimForm">

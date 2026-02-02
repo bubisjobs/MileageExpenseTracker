@@ -15,6 +15,11 @@ namespace MileageExpenseTracker.Controllers
             _logger = logger;
         }
 
+        [HttpGet("/AccessDenied")]
+        public IActionResult AccessDenied()
+        {
+            return View();
+        }
         public IActionResult Index()
         {
             return View();
