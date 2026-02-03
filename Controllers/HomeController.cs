@@ -5,7 +5,7 @@ using MileageExpenseTracker.Models;
 
 namespace MileageExpenseTracker.Controllers
 {
-    //[Authorize]
+    [Authorize(Roles ="Finance,Admin")]
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;

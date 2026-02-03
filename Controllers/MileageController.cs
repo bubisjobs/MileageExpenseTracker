@@ -3,9 +3,11 @@ using Microsoft.EntityFrameworkCore;
 using MileageExpenseTracker.Data;
 using MileageExpenseTracker.Models.ViewModels;
 using MileageExpenseTracker.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace MileageExpenseTracker.Controllers
 {
+    [Authorize]
     public class MileageController : Controller
     {
         private readonly ApplicationDbContext _applicationDbContext;
@@ -25,7 +27,7 @@ namespace MileageExpenseTracker.Controllers
 
             var claims = await _applicationDbContext.MileageClaims
                 .Include(x => x.Trips)
-                .Where(c => c.Email  == currentUserId || c.TeamLeadApprover == currentUserId || c.FinanceApprover == currentUserId)
+                //.Where(c => c.Email  == currentUserId || c.TeamLeadApprover == currentUserId || c.FinanceApprover == currentUserId)
                 .ToListAsync();
 
             return View(claims);

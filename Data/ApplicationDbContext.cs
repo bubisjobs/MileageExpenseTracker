@@ -25,5 +25,6 @@ namespace MileageExpenseTracker.Data
 
           
         }
+        public DbSet<MileageExpenseTracker.Models.Wik> Wik { get; set; } = default!;
     }
 }

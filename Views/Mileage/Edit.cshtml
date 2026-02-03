@@ -5,7 +5,7 @@
 }
 
 @section Styles {
-    <link rel="stylesheet" href="~/css/edit.css" />
+<link rel="stylesheet" href="~/css/edit.css" />
 }
 
 <div class="container" style="max-width: 1280px; margin: 0 auto; padding: 1.5rem;">
@@ -19,28 +19,31 @@
         </a>
         <div class="d-flex justify-content-between align-items-start">
             <div>
+
                 <h1 class="text-dark-custom mb-2" style="font-size: 1.875rem; font-weight: 700;">
                     @(Model?.Id != Guid.Empty ? "Mileage Claim Details" : "New Mileage Claim")
-                    @if (Model?.Status == ClaimStatus.Approved)
+                    
+                    @if (Model?.Status == ClaimStatus.SubmittedToTeamLead)
                     {
-                        <span class="status-badge status-approved">@Model.Status</span>
+                        <span class="status-badge status-approved">Pending Team Lead</span>
                     }
-                    else if (Model?.Status == ClaimStatus.Rejected)
+                    else if (Model?.Status == ClaimStatus.TeamLeadApproved)
                     {
-                        <span class="status-badge  status-rejected">@Model.Status</span>
-                    }
-                    else if (Model?.Status == ClaimStatus.SubmittedToTeamLead)
-                    {
-                        <span class="status-badge status-submitted">@Model.Status</span>
+                        <span class="status-badge  status-rejected">Approved by Team Lead</span>
                     }
                     else if (Model?.Status == ClaimStatus.SubmittedToFinance)
                     {
-                        <span class="status-badge status-submitted">@Model.Status</span>
+                        <span class="status-badge status-submitted">Pending Finance</span>
                     }
-                    else
+                    else if (Model?.Status == ClaimStatus.FinanceApproved)
                     {
-                        <span class="status-badge status-draft">@Model?.Status</span>
+                        <span class="status-badge status-submitted">Finance Approved</span>
                     }
+                    else if (Model?.Status == ClaimStatus.TeamLeadRejected || Model?.Status == ClaimStatus.FinanceRejected)
+                    {
+                        <span class="status-badge status-draft">Rejected</span>
+                    }
+                    </h1>
             </div>
             @if (isEditable)
             {
@@ -70,20 +73,20 @@
         </div>
     </div>
 
- 
+
     @if (TempData["Success"] != null)
     {
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    icon: 'success',
-                    title: 'Success!',
-                    text: '@TempData["Success"]',
-                    confirmButtonColor: '#10b981',
-                    timer: 3000,
-                    @* timerProgressBar: true, *@
-                    showConfirmButton: true
-                });
+            Swal.fire({
+            icon: 'success',
+            title: 'Success!',
+            text: '@TempData["Success"]',
+            confirmButtonColor: '#10b981',
+            timer: 3000,
+            @* timerProgressBar: true, *@
+            showConfirmButton: true
+            });
             });
         </script>
     }
@@ -92,13 +95,13 @@
     {
         <script>
             document.addEventListener('DOMContentLoaded', function() {
-                Swal.fire({
-                    icon: 'error',
-                    title: 'Error!',
-                    text: '@TempData["Error"]',
-                    confirmButtonColor: '#ef4444',
-                    confirmButtonText: 'OK'
-                });
+            Swal.fire({
+            icon: 'error',
+            title: 'Error!',
+            text: '@TempData["Error"]',
+            confirmButtonColor: '#ef4444',
+            confirmButtonText: 'OK'
+            });
             });
         </script>
     }
@@ -161,7 +164,7 @@
                 <thead>
                     <tr>
                         <th style="width: 140px;">Date</th>
-                        <th>Time</th>
+                        @* <th>Time</th> *@
                         <th>Description</th>
                         <th>Starting Location</th>
                         <th>End Location</th>
@@ -187,24 +190,28 @@
                         <tr data-trip-id="@trip.Id">
                             <td>
                                 <input type="date" class="form-control-sm w-100" value="@trip.TripDate.ToString("yyyy-MM-dd")"
-                                       disabled="@(!isEditable)" data-field="TripDate" style="border: 1px solid var(--gray-300); border-radius: 0.375rem; padding: 0.25rem 0.5rem;" />
+                                disabled="@(!isEditable)" data-field="TripDate" style="border: 1px solid var(--gray-300); border-radius: 0.375rem; padding: 0.25rem 0.5rem;" />
                             </td>
+                            @* <td> *@
+                            @*     <input type="text" class="form-control-sm w-100" value="@trip.TripDate." *@
+                            @*            placeholder="Trip description" disabled="@(!isEditable)" data-field="Description" style="border: 1px solid var(--gray-300); border-radius: 0.375rem; padding: 0.25rem 0.5rem;" /> *@
+                            @* </td> *@
                             <td>
                                 <input type="text" class="form-control-sm w-100" value="@trip.Description"
-                                       placeholder="Trip description" disabled="@(!isEditable)" data-field="Description" style="border: 1px solid var(--gray-300); border-radius: 0.375rem; padding: 0.25rem 0.5rem;" />
+                                placeholder="Trip description" disabled="@(!isEditable)" data-field="Description" style="border: 1px solid var(--gray-300); border-radius: 0.375rem; padding: 0.25rem 0.5rem;" />
                             </td>
                             <td>
                                 <input type="text" class="form-control-sm w-100" value="@trip.StartLocation"
-                                       placeholder="Start location" disabled="@(!isEditable)" data-field="StartLocation" style="border: 1px solid var(--gray-300); border-radius: 0.375rem; padding: 0.25rem 0.5rem;" />
+                                placeholder="Start location" disabled="@(!isEditable)" data-field="StartLocation" style="border: 1px solid var(--gray-300); border-radius: 0.375rem; padding: 0.25rem 0.5rem;" />
                             </td>
                             <td>
                                 <input type="text" class="form-control-sm w-100" value="@trip.EndLocation"
-                                       placeholder="End location" disabled="@(!isEditable)" data-field="EndLocation" style="border: 1px solid var(--gray-300); border-radius: 0.375rem; padding: 0.25rem 0.5rem;" />
+                                placeholder="End location" disabled="@(!isEditable)" data-field="EndLocation" style="border: 1px solid var(--gray-300); border-radius: 0.375rem; padding: 0.25rem 0.5rem;" />
                             </td>
                             <td>
                                 <input type="number" step="0.1" class="form-control-sm w-100 text-end"
-                                       value="@trip.Kilometers" disabled="@(!isEditable)" data-field="Kilometers"
-                                       onchange="calculateReimbursement(this)" style="border: 1px solid var(--gray-300); border-radius: 0.375rem; padding: 0.25rem 0.5rem;" />
+                                value="@trip.Kilometers" disabled="@(!isEditable)" data-field="Kilometers"
+                                onchange="calculateReimbursement(this)" style="border: 1px solid var(--gray-300); border-radius: 0.375rem; padding: 0.25rem 0.5rem;" />
                             </td>
                             <td class="text-end fw-medium text-dark-custom">
                                 $<span class="reimbursement-value">@trip.Reimbursement.ToString("N2")</span>
@@ -213,7 +220,7 @@
                             {
                                 <td class="text-center">
                                     <button type="button" class="btn btn-sm btn-link text-danger p-0"
-                                            onclick="deleteTrip('@trip.Id')" style="border: none; background: none;">
+                                    onclick="deleteTrip('@trip.Id')" style="border: none; background: none;">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
                                             <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0" />
                                         </svg>
@@ -229,34 +236,38 @@
 
     @if (Model.Status != ClaimStatus.Rejected & Model.Status != ClaimStatus.Approved & Model.Status != ClaimStatus.Draft)
     {
-        <div style="max-width: 800px; margin: 0 auto;">
-            <div class="mb-3">
-                <label asp-for="TeamLeadComment" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;">
-                    Comments (Optional)
-                </label>
-                <textarea id="approvalComment" asp-for="TeamLeadComment"
-                          class="form-control"
-                          rows="3"
-                          placeholder="Add any comments or notes about this claim..."
-                          style="border: 1px solid #d1d5db; border-radius: 0.5rem; padding: 0.75rem; font-size: 0.875rem; resize: vertical;"></textarea>
-                <small class="text-muted" style="font-size: 0.75rem;">Your comments will be visible to the @Model.EmployeeName</small>
-            </div>
+        @if(User.IsInRole("Finance") || User.IsInRole("TeamLead"))
+        {
+            <div style="max-width: 800px; margin: 0 auto;">
+                <div class="mb-3">
+                    <label asp-for="TeamLeadComment" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;">
+                        Comments (Optional)
+                    </label>
+                    <textarea id="approvalComment" asp-for="TeamLeadComment"
+                              class="form-control"
+                              rows="3"
+                              placeholder="Add any comments or notes about this claim..."
+                              style="border: 1px solid #d1d5db; border-radius: 0.5rem; padding: 0.75rem; font-size: 0.875rem; resize: vertical;"></textarea>
+                    <small class="text-muted" style="font-size: 0.75rem;">Your comments will be visible to the @Model.EmployeeName</small>
+                </div>
 
-            <div class="d-flex gap-3">
-                <button type="button" class="btn flex-grow-1 approve-btn" onclick="approveClaim('@Model.Id')" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 0.5rem; padding: 1rem; font-weight: 600; transition: transform 0.2s;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" fill="currentColor" class="bi bi-check-circle-fill me-2" viewBox="0 0 16 16">
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.97 11.03a.75.75 0 0 0 1.07 0l3-3a.75.75 0 1 0-1.06-1.06L7.5 9.44 6.03 7.97a.75.75 0 1 0-1.06 1.06l2 2z" />
-                    </svg>
-                    Approve Claim
-                </button>
-                <button type="button" class="btn flex-grow-1 reject-btn" onclick="rejectClaim('@Model.Id')" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; border-radius: 0.5rem; padding: 1rem; font-weight: 600; transition: transform 0.2s;">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
-                        <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z" />
-                    </svg>
-                    Reject Claim
-                </button>
+                <div class="d-flex gap-3">
+                    <button type="button" class="btn flex-grow-1 approve-btn" onclick="approveClaim('@Model.Id')" style="background: linear-gradient(135deg, #10b981 0%, #059669 100%); color: white; border: none; border-radius: 0.5rem; padding: 1rem; font-weight: 600; transition: transform 0.2s;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="1.25em" height="1.25em" fill="currentColor" class="bi bi-check-circle-fill me-2" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.97 11.03a.75.75 0 0 0 1.07 0l3-3a.75.75 0 1 0-1.06-1.06L7.5 9.44 6.03 7.97a.75.75 0 1 0-1.06 1.06l2 2z" />
+                        </svg>
+                        Approve Claim
+                    </button>
+                    <button type="button" class="btn flex-grow-1 reject-btn" onclick="rejectClaim('@Model.Id')" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); color: white; border: none; border-radius: 0.5rem; padding: 1rem; font-weight: 600; transition: transform 0.2s;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-x-circle-fill" viewBox="0 0 16 16">
+                            <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0M5.354 4.646a.5.5 0 1 0-.708.708L7.293 8l-2.647 2.646a.5.5 0 0 0 .708.708L8 8.707l2.646 2.647a.5.5 0 0 0 .708-.708L8.707 8l2.647-2.646a.5.5 0 0 0-.708-.708L8 7.293z" />
+                        </svg>
+                        Reject Claim
+                    </button>
+                </div>
             </div>
-        </div>
+        }
+       
     }
 </div>
     @section Scripts {
