@@ -15,6 +15,8 @@ namespace MileageExpenseTracker.Data
         public DbSet<User> Users { get; set; }
         public DbSet<MileageClaim> MileageClaims { get; set; }
         public DbSet<MileageTrip> MileageTrips { get; set; }
+        public DbSet<MileageRate> MileageRates { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);

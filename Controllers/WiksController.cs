@@ -161,8 +161,20 @@ namespace MileageExpenseTracker.Controllers
             try
             {
                 var wik = await _context.Wik.FindAsync(id);
+
                 if (wik != null)
                 {
+                    var mileageClaims = await _context.MileageClaims.Where(x => x.Wik == wik.Name).ToListAsync();
+                    if (mileageClaims.Any())
+                    {
+                        TempData["ErrorMessage"] = "This wik has an exsting Claim.";
+                        return RedirectToAction(nameof(Index));
+
+
+                    }
+
+
+
                     _context.Wik.Remove(wik);
                     await _context.SaveChangesAsync();
                     TempData["SuccessMessage"] = "Wik has been deleted successfully!";

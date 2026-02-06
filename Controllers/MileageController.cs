@@ -4,6 +4,12 @@ using MileageExpenseTracker.Data;
 using MileageExpenseTracker.Models.ViewModels;
 using MileageExpenseTracker.Models;
 using Microsoft.AspNetCore.Authorization;
+using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using MileageExpenseTracker.Services;
+using MileageExpenseTracker.SD;
+using NuGet.Common;
+using System.Security.Claims;
 
 namespace MileageExpenseTracker.Controllers
 {
@@ -11,24 +17,38 @@ namespace MileageExpenseTracker.Controllers
     public class MileageController : Controller
     {
         private readonly ApplicationDbContext _applicationDbContext;
-        public MileageController(ApplicationDbContext applicationDbContext)
+        private readonly IMileageCreateLookupService _mileageCreateLookupService;
+        private readonly IEmailService _emailService;
+
+        public MileageController(ApplicationDbContext applicationDbContext, IMileageCreateLookupService mileageCreateLookupService, IEmailService emailService)
         {
             _applicationDbContext = applicationDbContext;
-
+            _mileageCreateLookupService = mileageCreateLookupService;
+            _emailService = emailService;
         }
         // Helper method to get or create current user
-       
+
         public async Task<IActionResult> Index()
         {
-            // TODO: Get current user ID from authentication
-            //var currentUserId = Guid.Parse("00000000-0000-0000-0000-000000000001");
             var currentUserId = User.Identity?.Name;
+            var claims = new List<MileageClaim>();
 
+            if (User.IsInRole(SD.Roles.Finance))
+            {
 
-            var claims = await _applicationDbContext.MileageClaims
-                .Include(x => x.Trips)
-                //.Where(c => c.Email  == currentUserId || c.TeamLeadApprover == currentUserId || c.FinanceApprover == currentUserId)
-                .ToListAsync();
+                ///show only their own claim and any claim approved by team lead
+                claims = await _applicationDbContext.MileageClaims
+                    .Include(x => x.Trips)
+                    //.Where(c => c.Status == ClaimStatus.TeamLeadApproved ||)
+                    .ToListAsync();
+            }
+            else
+            {
+                claims = await _applicationDbContext.MileageClaims
+                    .Include(x => x.Trips)
+                    .Where(c => c.Email == currentUserId || c.TeamLeadApprover == currentUserId)
+                    .ToListAsync();
+            }
 
             return View(claims);
         }
@@ -37,27 +57,40 @@ namespace MileageExpenseTracker.Controllers
         public async Task<IActionResult> Create()
         {
 
-            var teamLeaad = await _applicationDbContext.Users.Where(x => x.Role == SD.Roles.TeamLead).ToListAsync();
-
-            var model = new MileageClaim
+            var ratePerKm = await _mileageCreateLookupService.GetActiveRatePerKmAsync();
+            var vm = new MileageCreateVM
             {
-                StartDate = DateTime.Today,
-                EndDate = DateTime.Today,
-                RatePerKm = 0.50m,
-                Status = ClaimStatus.Draft
+                TeamLeads = await _mileageCreateLookupService.GetTeamLeadsAsync(),
+                Wiks = await _mileageCreateLookupService.GetWiksAsync(),
+                mileageClaim = new MileageClaim
+                {
+                    StartDate = DateTime.Today,
+                    EndDate = DateTime.Today,
+                    RatePerKm = ratePerKm.Value,
+                    Status = ClaimStatus.Draft
+                }
             };
 
-            return View(model);
+            return View(vm);
         }
 
         // POST: Mileage/Create
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(MileageClaim mileageClaim)
+        public async Task<IActionResult> Create(MileageCreateVM mileageCreateVM)
         {
+
+            //mileageCreateVM.TeamLeads = await _mileageCreateLookupService.GetTeamLeadsAsync();
+            //mileageCreateVM.Wiks = await _mileageCreateLookupService.GetWiksAsync();
             if (ModelState.IsValid)
             {
-                if (mileageClaim.Trips.Any())
+
+                if (mileageCreateVM.mileageClaim.StartDate > mileageCreateVM.mileageClaim.EndDate)
+                {
+                    TempData["Error"] = "Start Date can't be greater than End date";
+                    return View();
+                }
+                if (mileageCreateVM.mileageClaim.Trips.Any())
                 {
 
                     var currentUserId = User.Identity?.Name;
@@ -69,28 +102,31 @@ namespace MileageExpenseTracker.Controllers
                             EmployfullName = user?.FirstName + " " + user?.LastName;
                         }
 
+                    //var currentMileageRate = await _applicationDbContext.MileageRates
+                                                                         //.SingleOrDefaultAsync(r => r.IsActive);
+                                                                         
 
                     var claim = new MileageClaim
                     {
                         Id = Guid.NewGuid(),
                         EmployeeName = EmployfullName,
                         Email = currentUserId,
-                        TeamLeadApprover = mileageClaim.TeamLeadApprover,
+                        TeamLeadApprover = mileageCreateVM.mileageClaim.TeamLeadApprover,
                         //FinanceApprover = mileageClaim.FinanceApprover,
-                        Wik = mileageClaim.Wik,
-                        StartDate = mileageClaim.StartDate,
-                        EndDate = mileageClaim.EndDate,
-                        RatePerKm = mileageClaim.RatePerKm,
+                        Wik = mileageCreateVM.mileageClaim.Wik,
+                        StartDate = mileageCreateVM.mileageClaim.StartDate,
+                        EndDate = mileageCreateVM.mileageClaim.EndDate,
+                        RatePerKm = mileageCreateVM.mileageClaim.RatePerKm,
 
                         Status = ClaimStatus.SubmittedToTeamLead,
                         CreatedAt = DateTime.UtcNow,
                         UpdatedAt = DateTime.UtcNow,
                         SubmittedAt = DateTime.UtcNow,
-                        TotalReimbursement = mileageClaim.TotalReimbursement,
+                        TotalReimbursement = mileageCreateVM.mileageClaim.TotalReimbursement,
 
                     };
                     var totalKm = 0.0m;
-                    foreach (var trip in mileageClaim.Trips)
+                    foreach (var trip in mileageCreateVM.mileageClaim.Trips)
                     {
                         totalKm += trip.Kilometers;
                         //add reimbursement for each trip
@@ -104,6 +140,12 @@ namespace MileageExpenseTracker.Controllers
 
                     await _applicationDbContext.MileageClaims.AddAsync(claim);
                     await _applicationDbContext.SaveChangesAsync();
+
+                    var link = $"{Request.Scheme}://{Request.Host}/Mileage/Edit/{claim.Id}";
+
+
+                    var emailbody = EmailBody.emailforReview(EmployfullName, link);
+                    _emailService.SendEmailAsync(mileageCreateVM.mileageClaim.TeamLeadApprover, "A new Mileage Claim requires your attention", emailbody);
                     TempData["Success"] = "Claim has been sucesfully added and sent to Team Lead.";
                     return RedirectToAction(nameof(Index));
                 }
@@ -112,7 +154,20 @@ namespace MileageExpenseTracker.Controllers
                 return RedirectToAction(nameof(Index));
             }
 
-            return View();
+         
+            var vm = new MileageCreateVM
+            {
+                TeamLeads = await _mileageCreateLookupService.GetTeamLeadsAsync(),
+                Wiks = await _mileageCreateLookupService.GetWiksAsync(),
+                mileageClaim = new MileageClaim
+                {
+                    StartDate = DateTime.Today,
+                    EndDate = DateTime.Today,
+                    RatePerKm = (decimal)await _mileageCreateLookupService.GetActiveRatePerKmAsync(),
+                    Status = ClaimStatus.Draft
+                }
+            };
+            return View(vm);
         }
 
         // GET: Mileage/Edit/5
@@ -157,16 +212,18 @@ namespace MileageExpenseTracker.Controllers
                     return NotFound();
                 }
 
-                // Only allow editing if status is Draft
-                //if (claim.Status != "Draft")
-                //{
-                //    TempData["Error"] = "Cannot edit a claim that has been submitted.";
-                //    return RedirectToAction(nameof(Edit), new { id });
-                //}
+            // Only allow editing if status is Draft
+            //if (claim.Status != "Draft")
+            //{
+            //    TempData["Error"] = "Cannot edit a claim that has been submitted.";
+            //    return RedirectToAction(nameof(Edit), new { id });
+            //}
+            var currentMileageRate = await _applicationDbContext.MileageRates
+                                                                  .SingleOrDefaultAsync(r => r.IsActive);
 
-                claim.StartDate = model.StartDate;
+            claim.StartDate = model.StartDate;
                 claim.EndDate = model.EndDate;
-                claim.RatePerKm = model.RatePerKm;
+                claim.RatePerKm = currentMileageRate.RatePerKm;
                 claim.UpdatedAt = DateTime.UtcNow;
 
                 await _applicationDbContext.SaveChangesAsync();
@@ -184,11 +241,12 @@ namespace MileageExpenseTracker.Controllers
         {
             var claim = await _applicationDbContext.MileageClaims.FindAsync(claimId);
 
-            //if (claim == null || claim.Status != "Draft")
-            //{
-            //    return Json(new { success = false, message = "Cannot add trip to this claim." });
-            //}
-
+            if (claim == null )
+            {
+                return Json(new { success = false, message = "Cannot add trip to this claim." });
+            }
+            var currentMileageRate = await _applicationDbContext.MileageRates
+                                                                      .SingleOrDefaultAsync(r => r.IsActive);
             var trip = new MileageTrip
             {
                 Id = Guid.NewGuid(),
@@ -199,7 +257,7 @@ namespace MileageExpenseTracker.Controllers
                 StartLocation = model.StartLocation,
                 EndLocation = model.EndLocation,
                 Kilometers = model.Kilometers,
-                Reimbursement = model.Kilometers * claim.RatePerKm
+                Reimbursement = model.Kilometers * currentMileageRate.RatePerKm
             };
 
             _applicationDbContext.MileageTrips.Add(trip);
@@ -321,25 +379,42 @@ namespace MileageExpenseTracker.Controllers
                     return Json(new { success = false, message = "Claim not found" });
                 }
 
-                if (claim.Trips.Count < 1)
+                if (!claim.Trips.Any())
                 {
                     return Json(new { success = false, message = "Claim has no Mileage" });
 
                 }
-                //// Update claim status based on current workflow stage
-                //if (claim.Status == ClaimStatus.SubmittedToTeamLead)
-                //{
-                //    claim.Status = ClaimStatus.TeamLeadApproved;
-                //    claim.TeamLeadReviewedAt = DateTime.UtcNow;
-                //    claim.TeamLeadComment = comment;
-                //}
-                //else if (claim.Status == ClaimStatus.SubmittedToFinance)
-                //{
-                claim.Status = ClaimStatus.Approved;
-                claim.FinanceReviewedAt = DateTime.UtcNow;
-                claim.FinanceComment = comment;
-                // Set FinanceComment if needed
-                //}
+                // to check if it's not yet approved by team lead 
+                if(claim.Status != ClaimStatus.TeamLeadApproved)
+                {
+                    claim.Status = ClaimStatus.TeamLeadApproved;
+                    claim.TeamLeadComment = comment;
+                    claim.TeamLeadReviewedAt = DateTime.UtcNow;
+
+                    var financeUsers = await _applicationDbContext.Users.AsNoTracking().Where(x => x.Role == SD.Roles.Finance).ToListAsync();
+                    var teamLead = await _applicationDbContext.Users.AsNoTracking().SingleOrDefaultAsync(x => x.Email == claim.TeamLeadApprover);
+                   
+                    foreach(var financeUser in financeUsers)
+                    {
+                        var link = $"{Request.Scheme}://{Request.Host}/Mileage/Edit/{claim.Id}";
+                        var emailbody = EmailBody.TeamLeadApproved($"{teamLead.FirstName} {teamLead.LastName}", link);
+                        _emailService.SendEmailAsync(financeUser.Email, "A new Mileage Claim requires your attention", emailbody);
+
+                    }
+
+                }
+                else
+                {
+
+
+                    claim.Status = ClaimStatus.FinanceApproved;
+                    claim.FinanceReviewedAt = DateTime.UtcNow;
+                    claim.FinanceComment = comment;
+                    var link = $"{Request.Scheme}://{Request.Host}/Mileage/Edit/{claim.Id}";
+                    var emailbody = EmailBody.ClaimFullyApproved($"{claim.EmployeeName}", claim.TotalReimbursement.Value, link, claim.FinanceComment);
+                    _emailService.SendEmailAsync(claim.Email, "Mileage Claim Approved", emailbody);
+                }
+              
 
                 claim.UpdatedAt = DateTime.UtcNow;
                 await _applicationDbContext.SaveChangesAsync();
@@ -368,25 +443,31 @@ namespace MileageExpenseTracker.Controllers
                     return Json(new { success = false, message = "Claim not found" });
                 }
                
-                if (claim.Trips.Count < 1)
-                {
-                    return Json(new { success = false, message = "Claim has no Mileage" });
-
-                }
-
-                // Update claim status based on current workflow stage
-                //if (claim.Status == ClaimStatus.SubmittedToTeamLead)
+                //if (claim.Trips.Count < 1)
                 //{
-                //    claim.Status = ClaimStatus.TeamLeadRejected;
-                //    claim.TeamLeadReviewedAt = DateTime.UtcNow;
-                //    claim.TeamLeadComment = comment;
+                //    return Json(new { success = false, message = "Claim has no Mileage" });
+
                 //}
-                //else
-                //{
-                claim.Status = ClaimStatus.Rejected;
-                claim.FinanceReviewedAt = DateTime.UtcNow;
-                claim.FinanceComment = comment;
 
+                if(claim.Status != ClaimStatus.TeamLeadRejected)
+                {
+                    claim.Status = ClaimStatus.TeamLeadRejected;
+                    claim.TeamLeadReviewedAt = DateTime.UtcNow;
+                    claim.TeamLeadComment = comment;
+                    var link = $"{Request.Scheme}://{Request.Host}/Mileage/Edit/{claim.Id}";
+                    var emailbody = EmailBody.ClaimRejected($"{claim.EmployeeName}", link, comment);
+                    _emailService.SendEmailAsync(claim.Email, "Mileage Claim Rejected", emailbody);
+                }
+                else
+                {
+                    claim.Status = ClaimStatus.FinanceRejected;
+                    claim.FinanceReviewedAt = DateTime.UtcNow;
+                    claim.FinanceComment = comment;
+                    var link = $"{Request.Scheme}://{Request.Host}/Mileage/Edit/{claim.Id}";
+                    var emailbody = EmailBody.ClaimRejected($"{claim.EmployeeName}", link, comment);
+                    _emailService.SendEmailAsync(claim.Email, "Mileage Claim Rejected", emailbody);
+                }
+                
 
 
 

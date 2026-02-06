@@ -52,6 +52,7 @@ builder.Services.AddRazorPages(options =>
 
 });
 //builder.Services.AddTransient<IEmailSender, NoOpEmailSender>();
+builder.Services.AddScoped<IMileageCreateLookupService, MileageCreateLookupService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();

@@ -43,8 +43,8 @@ namespace MileageExpenseTracker.Models
 
         [Required]
         [Display(Name = "Rate per Kilometer")]
-        [Range(0.01, 10.00)]
-        public decimal RatePerKm { get; set; } = 0.50m;
+       
+        public decimal RatePerKm { get; set; }
 
         public decimal? TotalKilometers { get; set; }
         public decimal? TotalReimbursement { get; set; }

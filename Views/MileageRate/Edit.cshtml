@@ -1,0 +1,181 @@
+﻿@model MileageExpenseTracker.Models.MileageRate
+@{
+    ViewData["Title"] = "Update Mileage Rate";
+}
+
+<div class="container" style="max-width: 700px; margin: 2rem auto; padding: 1.5rem;">
+    <!-- Header Card -->
+    <div style="
+        background: white;
+        padding: 1.5rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+        margin-bottom: 1.5rem;
+    ">
+        <h1 style="font-size: 1.5rem; font-weight: 600; color: #111827; margin-bottom: 0.5rem;">
+            Update Mileage Rate
+        </h1>
+        <p style="color: #6b7280; font-size: 0.875rem; margin: 0;">
+            Set the current rate per kilometer for mileage reimbursement.
+        </p>
+    </div>
+
+    <!-- Form Card -->
+    <div style="
+        background: white;
+        padding: 2rem;
+        border-radius: 0.5rem;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    ">
+        <form asp-action="Edit" method="post">
+            <div asp-validation-summary="ModelOnly" class="text-danger" style="margin-bottom: 1rem;" role="alert"></div>
+
+            <input type="hidden" asp-for="Id" />
+
+            <div class="form-group">
+                <label asp-for="RatePerKm" style="
+                    display: block;
+                    font-size: 0.875rem;
+                    font-weight: 500;
+                    color: #374151;
+                    margin-bottom: 0.5rem;
+                ">
+                    Rate Per Kilometer (CAD) <span class="text-danger">*</span>
+                </label>
+                <div style="position: relative;">
+                    <span style="
+                        position: absolute;
+                        left: 0.75rem;
+                        top: 50%;
+                        transform: translateY(-50%);
+                        color: #6b7280;
+                        font-weight: 500;
+                    ">$</span>
+                    <input asp-for="RatePerKm"
+                           type="number"
+                           step="0.01"
+                           class="form-control"
+                           style="
+                               width: 100%;
+                               padding: 0.625rem 0.75rem 0.625rem 1.75rem;
+                               border: 1px solid #d1d5db;
+                               border-radius: 0.375rem;
+                               font-size: 0.875rem;
+                           "
+                           placeholder="0.00" />
+                </div>
+                <span asp-validation-for="RatePerKm" class="text-danger" style="font-size: 0.75rem; margin-top: 0.25rem; display: block;"></span>
+                <small style="color: #6b7280; font-size: 0.75rem; margin-top: 0.25rem; display: block;">
+                    Enter the reimbursement rate per kilometer (e.g., 0.68 for $0.68/km)
+                </small>
+            </div>
+
+            <div class="form-group">
+                <label asp-for="EffectiveDate" style="
+                    display: block;
+                    font-size: 0.875rem;
+                    font-weight: 500;
+                    color: #374151;
+                    margin-bottom: 0.5rem;
+                ">
+                    Effective Date <span class="text-danger">*</span>
+                </label>
+                <input asp-for="EffectiveDate"
+                       type="date"
+                       class="form-control"
+                       style="
+                           width: 100%;
+                           padding: 0.625rem 0.75rem;
+                           border: 1px solid #d1d5db;
+                           border-radius: 0.375rem;
+                           font-size: 0.875rem;
+                       " />
+                <span asp-validation-for="EffectiveDate" class="text-danger" style="font-size: 0.75rem; margin-top: 0.25rem; display: block;"></span>
+                <small style="color: #6b7280; font-size: 0.75rem; margin-top: 0.25rem; display: block;">
+                    The date from which this rate becomes effective
+                </small>
+            </div>
+
+            <!-- Current Rate Info Box -->
+            @if (Model?.Id > 0)
+            {
+                <div style="
+                    background: #f0f9ff;
+                    border-left: 4px solid #3b82f6;
+                    padding: 1rem;
+                    border-radius: 0.375rem;
+                    margin-bottom: 1.5rem;
+                    ">
+                    <h3 style="font-size: 0.875rem; font-weight: 600; color: #1e40af; margin-bottom: 0.5rem;">
+                        Current Rate Information
+                    </h3>
+                    <p style="font-size: 0.875rem; color: #1e40af; margin: 0;">
+                        <strong>Current Rate:</strong> $@Model.RatePerKm/km<br />
+                        <strong>Last Updated:</strong> @Model.LastUpdated.ToString("MMMM dd, yyyy")<br />
+                        @if (!string.IsNullOrEmpty(Model.UpdatedBy))
+                        {
+                            <strong>Updated By:</strong> @Model.UpdatedBy
+                        }
+                    </p>
+                </div>
+            }
+
+            <div style="display: flex; gap: 0.5rem; margin-top: 1.5rem;">
+                <a asp-action="Index"
+                   style="
+                       flex: 1;
+                       padding: 0.625rem;
+                       background-color: #6b7280;
+                       color: white;
+                       border: none;
+                       border-radius: 0.375rem;
+                       font-weight: 500;
+                       text-align: center;
+                       text-decoration: none;
+                       display: block;
+                   "
+                   onmouseover="this.style.backgroundColor='#4b5563'"
+                   onmouseout="this.style.backgroundColor='#6b7280'">
+                    Cancel
+                </a>
+                <button type="submit"
+                        style="
+                            flex: 1;
+                            padding: 0.625rem;
+                            background-color: #3b82f6;
+                            color: white;
+                            border: none;
+                            border-radius: 0.375rem;
+                            font-weight: 500;
+                            cursor: pointer;
+                        "
+                        onmouseover="this.style.backgroundColor='#2563eb'"
+                        onmouseout="this.style.backgroundColor='#3b82f6'">
+                    Update Rate
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<style>
+    .form-control:focus {
+        outline: none;
+        border-color: #3b82f6;
+        box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+    }
+
+    .text-danger {
+        color: #dc2626;
+    }
+
+    .form-group {
+        margin-bottom: 1.5rem;
+    }
+</style>
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

@@ -27,18 +27,18 @@
             <button class="btn btn-sm status-filter-btn active" data-status="all" style="padding: 0.5rem 1rem; border-radius: 0.375rem; border: 1px solid #d1d5db; background: white; font-weight: 500; transition: all 0.2s;">
                 All Claims
             </button>
-            <button class="btn btn-sm status-filter-btn" data-status="Draft" style="padding: 0.5rem 1rem; border-radius: 0.375rem; border: 1px solid #d1d5db; background: white; font-weight: 500; transition: all 0.2s;">
-                Draft
-            </button>
+            @* <button class="btn btn-sm status-filter-btn" data-status="Draft" style="padding: 0.5rem 1rem; border-radius: 0.375rem; border: 1px solid #d1d5db; background: white; font-weight: 500; transition: all 0.2s;"> *@
+            @*     Draft *@
+            @* </button> *@
             <button class="btn btn-sm status-filter-btn" data-status="SubmittedToTeamLead" style="padding: 0.5rem 1rem; border-radius: 0.375rem; border: 1px solid #d1d5db; background: white; font-weight: 500; transition: all 0.2s;">
-                Pending Team Lead
+                Pending Team Lead 
             </button>
             <button class="btn btn-sm status-filter-btn" data-status="TeamLeadApproved" style="padding: 0.5rem 1rem; border-radius: 0.375rem; border: 1px solid #d1d5db; background: white; font-weight: 500; transition: all 0.2s;">
-                Team Lead Approved
+                Team Lead Approved and Pending Finance
             </button>
-            <button class="btn btn-sm status-filter-btn" data-status="SubmittedToFinance" style="padding: 0.5rem 1rem; border-radius: 0.375rem; border: 1px solid #d1d5db; background: white; font-weight: 500; transition: all 0.2s;">
-                Pending Finance
-            </button>
+            @* <button class="btn btn-sm status-filter-btn" data-status="SubmittedToFinance" style="padding: 0.5rem 1rem; border-radius: 0.375rem; border: 1px solid #d1d5db; background: white; font-weight: 500; transition: all 0.2s;"> *@
+            @*     Pending Finance *@
+            @* </button> *@
             <button class="btn btn-sm status-filter-btn" data-status="FinanceApproved" style="padding: 0.5rem 1rem; border-radius: 0.375rem; border: 1px solid #d1d5db; background: white; font-weight: 500; transition: all 0.2s;">
                 Approved
             </button>
@@ -75,12 +75,12 @@
                             @{
                                 var (statusText, statusClass) = claim.Status.ToString() switch
                                 {
-                                    "Draft" => ("Draft", "status-draft"),
+                                    // "Draft" => ("Draft", "status-draft"),
                                     "SubmittedToTeamLead" => ("Pending Team Lead", "status-submitted"),
-                                    "TeamLeadApproved" => ("Team Lead Approved", "status-approved"),
-                                    "TeamLeadRejected" => ("Team Lead Rejected", "status-rejected"),
-                                    "SubmittedToFinance" => ("Pending Finance", "status-submitted"),
-                                    "FinanceApproved" => ("Finance Approved", "status-approved"),
+                                    "TeamLeadApproved" => ("Team Lead Approved and Pending Finance", "status-approved"),
+                                    "TeamLeadRejected" => ("Team Lead Rejected ", "status-rejected"),
+                                    // "SubmittedToFinance" => ("Pending Finance", "status-submitted"),
+                                    "FinanceApproved" => ("Finance Approved", "status-submitted"),
                                     "FinanceRejected" => ("Finance Rejected", "status-rejected"),
                                     "Rejected" => ("Rejected", "status-rejected"),
                                     "Approved" => ("Approved", "status-approved"),

@@ -1,20 +1,19 @@
-﻿@model MileageExpenseTracker.Models.MileageClaim
+﻿
+@model MileageExpenseTracker.Models.ViewModels.MileageCreateVM
+@inject Microsoft.Extensions.Configuration.IConfiguration Configuration
 @{
     ViewData["Title"] = "Add Claim";
 }
 
-
 <div class="container" style="max-width: 1280px; margin: 0 auto; padding: 1.5rem;">
-    @* <div class="custom-card mb-4" style="padding: 1.5rem;"> *@
-        <a asp-action="Index" class="btn-link-custom ">
-            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-short" viewBox="0 0 16 16">
-                <path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5" />
-            </svg>
-            Back to Claims
-        </a>
-        <h1 class="text-dark-custom" style="font-size: 1.875rem; font-weight: 700; margin: 0;color: white;">New Mileage Claim</h1>
-    @* </div> *@
-   
+    <a asp-action="Index" class="btn-link-custom ">
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-arrow-left-short" viewBox="0 0 16 16">
+            <path fill-rule="evenodd" d="M12 8a.5.5 0 0 1-.5.5H5.707l2.147 2.146a.5.5 0 0 1-.708.708l-3-3a.5.5 0 0 1 0-.708l3-3a.5.5 0 1 1 .708.708L5.707 7.5H11.5a.5.5 0 0 1 .5.5" />
+        </svg>
+        Back to Claims
+    </a>
+    <h1 class="text-dark-custom" style="font-size: 1.875rem; font-weight: 700; margin: 0;color: black;">New Mileage Claim</h1>
+
     <form asp-action="Create" method="post" id="createClaimForm">
         <div asp-validation-summary="All" class="text-danger" role="alert"></div>
 
@@ -23,49 +22,41 @@
 
             <div class="row g-3">
                 <div class="col-md-6">
-                    <label asp-for="TeamLeadApprover" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;">Team Lead / Approver</label>
-                    <select asp-for="TeamLeadApprover" class="form-control form-control-custom">
+                    <label asp-for="mileageClaim.TeamLeadApprover" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;">Team Lead / Approver</label>
+                    <select asp-for="mileageClaim.TeamLeadApprover" asp-items="Model.TeamLeads" class="form-control form-control-custom">
                         <option value="">-- Select Team Lead --</option>
-                        <option value="1">John</option>
-                        <option value="2">Bubacarr </option>
-                        <option value="3">John Doe</option>
                     </select>
-                    <span asp-validation-for="TeamLeadApprover" class="text-danger" style="font-size: 0.875rem;"></span>
+                    <span asp-validation-for="mileageClaim.TeamLeadApprover" class="text-danger" style="font-size: 0.875rem;"></span>
                 </div>
 
                 <div class="col-md-6">
-                    <label asp-for="Wik" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;">Work Location</label>
-                    <select asp-for="Wik" class="form-control form-control-custom">
+                    <label asp-for="mileageClaim.Wik" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;">Work Location</label>
+                    <select asp-for="mileageClaim.Wik" asp-items="Model.Wiks" class="form-control form-control-custom">
                         <option value="">-- Select Location --</option>
-                        <option value="House">AA</option>
-                        <option value="Work">CP</option>
-                        <option value="Work">Head Office</option>
-                        <option value="Work">MA</option>
                     </select>
-                    <span asp-validation-for="Wik" class="text-danger" style="font-size: 0.875rem;"></span>
+                    <span asp-validation-for="mileageClaim.Wik" class="text-danger" style="font-size: 0.875rem;"></span>
                 </div>
 
                 <div class="col-md-4">
-                    <label asp-for="StartDate" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;">Start Date</label>
-                    <input asp-for="StartDate" class="form-control form-control-custom" type="date" />
-                    <span asp-validation-for="StartDate" class="text-danger" style="font-size: 0.875rem;"></span>
+                    <label asp-for="mileageClaim.StartDate" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;">Start Date</label>
+                    <input asp-for="mileageClaim.StartDate" class="form-control form-control-custom" type="date" />
+                    <span asp-validation-for="mileageClaim.StartDate" class="text-danger" style="font-size: 0.875rem;"></span>
                 </div>
 
                 <div class="col-md-4">
-                    <label asp-for="EndDate" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;">End Date</label>
-                    <input asp-for="EndDate" class="form-control form-control-custom" type="date" />
-                    <span asp-validation-for="EndDate" class="text-danger" style="font-size: 0.875rem;"></span>
+                    <label asp-for="mileageClaim.EndDate" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;">End Date</label>
+                    <input asp-for="mileageClaim.EndDate" class="form-control form-control-custom" type="date" />
+                    <span asp-validation-for="mileageClaim.EndDate" class="text-danger" style="font-size: 0.875rem;"></span>
                 </div>
 
                 <div class="col-md-4">
-                    <label asp-for="RatePerKm" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;">Rate per KM</label>
-                    <input asp-for="RatePerKm" class="form-control form-control-custom" type="number" step="0.01" onchange="updateTotals()" disabled />
-                    <span asp-validation-for="RatePerKm" class="text-danger" style="font-size: 0.875rem;"></span>
+                    <label asp-for="mileageClaim.RatePerKm" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;">Rate per KM</label>
+                    <input asp-for="mileageClaim.RatePerKm" class="form-control form-control-custom" type="number" step="0.01" onchange="updateTotals()" readonly />
+                    <span asp-validation-for="mileageClaim.RatePerKm" class="text-danger" style="font-size: 0.875rem;"></span>
                 </div>
 
-                <input type="hidden" asp-for="TotalReimbursement" id="totalReimbursementForm" />
-                <input type="hidden" asp-for="TotalKilometers" id="totalKilometersForm" />
-
+                <input type="hidden" asp-for="mileageClaim.TotalReimbursement" id="totalReimbursementForm" />
+                <input type="hidden" asp-for="mileageClaim.TotalKilometers" id="totalKilometersForm" />
             </div>
         </div>
 
@@ -77,32 +68,52 @@
                     <div class="row g-2 align-items-end">
                         <div class="col-md-2">
                             <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">Date</label>
-                            <input type="date" name="Trips[0].TripDate" class="form-control form-control-sm" required />
+                            <input type="date" name="mileageClaim.Trips[0].TripDate" class="form-control form-control-sm" required />
                         </div>
                         <div class="col-md-1">
                             <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">Time</label>
-                            <input type="text" name="Trips[0].TripTime" class="form-control form-control-sm" placeholder="HH:MM" />
+                            <input type="text" name="mileageClaim.Trips[0].TripTime" class="form-control form-control-sm" placeholder="HH:MM" />
                         </div>
                         <div class="col-md-2">
                             <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">Description</label>
-                            <input type="text" name="Trips[0].Description" class="form-control form-control-sm" required />
+                            <input type="text" name="mileageClaim.Trips[0].Description" class="form-control form-control-sm" required />
                         </div>
                         <div class="col-md-2">
                             <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">Start Location</label>
-                            <input type="text" name="Trips[0].StartLocation" class="form-control form-control-sm" required />
+                            <input type="text"
+                                   name="mileageClaim.Trips[0].StartLocation"
+                                   class="form-control form-control-sm location-autocomplete start-location"
+                                   data-trip-index="0"
+                                   placeholder="Enter start location"
+                                   required />
                         </div>
                         <div class="col-md-2">
                             <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">End Location</label>
-                            <input type="text" name="Trips[0].EndLocation" class="form-control form-control-sm" required />
+                            <input type="text"
+                                   name="mileageClaim.Trips[0].EndLocation"
+                                   class="form-control form-control-sm location-autocomplete end-location"
+                                   data-trip-index="0"
+                                   placeholder="Enter end location"
+                                   required />
                         </div>
                         <div class="col-md-2">
-                            <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">Kilometers</label>
-                            <input type="number" name="Trips[0].Kilometers" class="form-control form-control-sm trip-kilometers" step="0.1" min="0.1" required onchange="updateTotals()" />
+                            <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">
+                                Kilometers
+                                <span style="font-size: 0.65rem; color: #6b7280;">(Auto)</span>
+                            </label>
+                            <input type="number"
+                                   name="mileageClaim.Trips[0].Kilometers"
+                                   class="form-control form-control-sm trip-kilometers"
+                                   step="0.1"
+                                   min="0.1"
+                                   required
+                                   readonly
+                                   style="background-color: #f3f4f6;"
+                                   onchange="updateTotals()" />
                         </div>
                         <div class="col-md-1 text-center m-0 p-0">
-                            <button type="button" class="btn btn-sm btn-link text-danger " onclick="removeTrip(this)">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="20
-" height="20" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                            <button type="button" class="btn btn-sm btn-link text-danger" onclick="removeTrip(this)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
                                     <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0" />
                                 </svg>
                             </button>
@@ -125,7 +136,6 @@
                     <div class="summary-card-blue">
                         <p>Total Kilometers</p>
                         <h3 id="totalKilometers">0.00 km</h3>
-
                     </div>
                 </div>
                 <div class="col-md-6">
@@ -138,11 +148,7 @@
         </div>
 
         <div class="d-flex gap-2">
-            <button type="submit" name="draft" value="save" class="btn-secondary-custom">
-                <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-save" viewBox="0 0 16 16">
-                    <path d="M8 0a2 2 0 0 0-2 2v1H2.5A1.5 1.5 0 0 0 1 4.5v9A1.5 1.5 0 0 0 2.5 15h11a1.5 1.5 0 0 0 1.5-1.5v-9A1.5 1.5 0 0 0 13.5 3H10V2a2 2 0 0 0-2-2zm3 3v1H5V3a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1zM2.5 4A.5.5 0 0 1 3 4.5v9a.5.5 0 0 1-.5.5h-1A.5.5 0 0 1 1 13.5v-9A.5.5 0 0 1 2.5 4zm11 10a.5.5 0 0 1-.5.5h-11a.5.5 0 0 1-.5-.5v-9A.5.5 0 0 1 2.5 4h11a.5.5 0 0 1 .5.5v9z" />
-                </svg> Save as Draft
-            </button>
+        
             <button type="submit" name="action" value="submit" class="btn-primary-custom">
                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
                     <path d="M15.964 0.686a.5.5 0 0 1 .036.708l-15 15a.5.5 0 0 1-.708-.708l15-15a.5.5 0 0 1 .708.036z" />
@@ -158,8 +164,101 @@
         await Html.RenderPartialAsync("_ValidationScriptsPartial");
     }
 
+    <!-- Google Maps API -->
+    <script src="https://maps.googleapis.com/maps/api/js?key=@Configuration["GoogleMaps:ApiKey"]&libraries=places"></script>
+
     <script>
         let tripIndex = 1;
+        let autocompleteInstances = [];
+
+        // Initialize autocomplete when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeAutocomplete();
+            updateTotals();
+        });
+
+        function initializeAutocomplete() {
+            const inputs = document.querySelectorAll('.location-autocomplete');
+
+            inputs.forEach(input => {
+                if (!input.dataset.autocompleteInitialized) {
+                    const autocomplete = new google.maps.places.Autocomplete(input, {
+                        types: ['geocode'],
+                        componentRestrictions: { country: 'ca' } // Restrict to Canada
+                    });
+
+                    autocomplete.addListener('place_changed', function() {
+                        const place = autocomplete.getPlace();
+                        if (place.geometry) {
+                            calculateDistance(input);
+                        }
+                    });
+
+                    // Also trigger calculation when user types and presses Enter
+                    input.addEventListener('blur', function() {
+                        setTimeout(() => calculateDistance(input), 500);
+                    });
+
+                    input.dataset.autocompleteInitialized = 'true';
+                    autocompleteInstances.push(autocomplete);
+                }
+            });
+        }
+
+        function calculateDistance(changedInput) {
+            const tripRow = changedInput.closest('.trip-row');
+
+            const startInput = tripRow.querySelector('.start-location');
+            const endInput = tripRow.querySelector('.end-location');
+            const kmInput = tripRow.querySelector('.trip-kilometers');
+
+            // Only calculate if both locations are filled
+            if (startInput.value.trim() && endInput.value.trim()) {
+                const service = new google.maps.DistanceMatrixService();
+
+                service.getDistanceMatrix({
+                    origins: [startInput.value],
+                    destinations: [endInput.value],
+                    travelMode: 'DRIVING',
+                    unitSystem: google.maps.UnitSystem.METRIC
+                }, function(response, status) {
+                    if (status === 'OK') {
+                        const result = response.rows[0].elements[0];
+                        if (result.status === 'OK') {
+                            // Distance in kilometers
+                            const distanceKm = (result.distance.value / 1000).toFixed(1);
+                            kmInput.value = distanceKm;
+                            updateTotals();
+
+                            // Visual feedback
+                            kmInput.style.backgroundColor = '#dcfce7';
+                            setTimeout(() => {
+                                kmInput.style.backgroundColor = '#f3f4f6';
+                            }, 1000);
+                        } else {
+                            console.error('Distance calculation failed:', result.status);
+                            showDistanceError();
+                        }
+                    } else {
+                        console.error('Distance Matrix error:', status);
+                        showDistanceError();
+                    }
+                });
+            }
+        }
+
+        function showDistanceError() {
+            Swal.fire({
+                icon: 'error',
+                title: 'Distance Error',
+                text: 'Could not calculate distance. Please check the locations or enter kilometers manually.',
+                confirmButtonColor: '#3b82f6',
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
+        }
 
         function addTripRow() {
             const container = document.getElementById('tripsContainer');
@@ -171,33 +270,36 @@
                 <div class="row g-2 align-items-end">
                     <div class="col-md-2">
                         <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">Date</label>
-                        <input type="date" name="Trips[${tripIndex}].TripDate" class="form-control form-control-sm" required />
+                        <input type="date" name="mileageClaim.Trips[${tripIndex}].TripDate" class="form-control form-control-sm" required />
                     </div>
                     <div class="col-md-1">
                         <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">Time</label>
-                        <input type="text" name="Trips[${tripIndex}].TripTime" class="form-control form-control-sm" placeholder="HH:MM" />
+                        <input type="text" name="mileageClaim.Trips[${tripIndex}].TripTime" class="form-control form-control-sm" placeholder="HH:MM" />
                     </div>
                     <div class="col-md-2">
                         <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">Description</label>
-                        <input type="text" name="Trips[${tripIndex}].Description" class="form-control  form-control-sm" required />
+                        <input type="text" name="mileageClaim.Trips[${tripIndex}].Description" class="form-control form-control-sm" required />
                     </div>
                     <div class="col-md-2">
                         <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">Start Location</label>
-                        <input type="text" name="Trips[${tripIndex}].StartLocation" class="form-control form-control-sm" required />
+                        <input type="text" name="mileageClaim.Trips[${tripIndex}].StartLocation" class="form-control form-control-sm location-autocomplete start-location" data-trip-index="${tripIndex}" placeholder="Enter start location" required />
                     </div>
                     <div class="col-md-2">
                         <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">End Location</label>
-                        <input type="text" name="Trips[${tripIndex}].EndLocation" class="form-control form-control-sm" required />
+                        <input type="text" name="mileageClaim.Trips[${tripIndex}].EndLocation" class="form-control form-control-sm location-autocomplete end-location" data-trip-index="${tripIndex}" placeholder="Enter end location" required />
                     </div>
                     <div class="col-md-2">
-                        <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">Kilometers</label>
-                        <input type="number" name="Trips[${tripIndex}].Kilometers" class="form-control form-control-sm trip-kilometers" step="0.1" min="0.1" required onchange="updateTotals()" />
+                        <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">
+                            Kilometers
+                            <span style="font-size: 0.65rem; color: #6b7280;">(Auto)</span>
+                        </label>
+                        <input type="number" name="mileageClaim.Trips[${tripIndex}].Kilometers" class="form-control form-control-sm trip-kilometers" step="0.1" min="0.1" required readonly style="background-color: #f3f4f6;" onchange="updateTotals()" />
                     </div>
                     <div class="col-md-1 text-center m-0 p-0">
-                        <button type="button" class="btn btn-sm btn-link text-danger " onclick="removeTrip(this)">
-                                   <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
-          <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
-        </svg>
+                        <button type="button" class="btn btn-sm btn-link text-danger" onclick="removeTrip(this)">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-trash-fill" viewBox="0 0 16 16">
+                                <path d="M2.5 1a1 1 0 0 0-1 1v1a1 1 0 0 0 1 1H3v9a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V4h.5a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1H10a1 1 0 0 0-1-1H7a1 1 0 0 0-1 1zm3 4a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 .5-.5M8 5a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-1 0v-7A.5.5 0 0 1 8 5m3 .5v7a.5.5 0 0 1-1 0v-7a.5.5 0 0 1 1 0"/>
+                            </svg>
                         </button>
                     </div>
                 </div>
@@ -205,6 +307,9 @@
 
             container.appendChild(newRow);
             tripIndex++;
+
+            // Initialize autocomplete for new inputs
+            initializeAutocomplete();
             updateTotals();
         }
 
@@ -212,15 +317,15 @@
             const tripRow = button.closest('.trip-row');
             const container = document.getElementById('tripsContainer');
 
-               if (container.children.length === 1) {
-            Swal.fire({
-                icon: 'warning',
-                title: 'At least one trip required',
-                text: 'You must have at least one trip.',
-                confirmButtonColor: '#3b82f6'
-            });
-            return;
-        }
+            if (container.children.length === 1) {
+                Swal.fire({
+                    icon: 'warning',
+                    title: 'At least one trip required',
+                    text: 'You must have at least one trip.',
+                    confirmButtonColor: '#3b82f6'
+                });
+                return;
+            }
 
             tripRow.remove();
             reindexTrips();
@@ -239,6 +344,9 @@
                     if (name) {
                         input.setAttribute('name', name.replace(/Trips\[\d+\]/, `Trips[${index}]`));
                     }
+                    if (input.dataset.tripIndex !== undefined) {
+                        input.dataset.tripIndex = index;
+                    }
                 });
             });
 
@@ -246,7 +354,7 @@
         }
 
         function updateTotals() {
-            const ratePerKm = parseFloat(document.querySelector('[name="RatePerKm"]').value) || 0.50;
+            const ratePerKm = parseFloat(document.querySelector('[name="mileageClaim.RatePerKm"]').value);
             let totalKm = 0;
 
             document.querySelectorAll('.trip-kilometers').forEach(input => {
@@ -257,13 +365,8 @@
 
             document.getElementById('totalKilometers').textContent = totalKm.toFixed(2) + ' km';
             document.getElementById('totalReimbursement').textContent = '$' + totalReimbursement.toFixed(2);
-            document.getElementsByName('TotalReimbursement').value = totalReimbursement;
-            document.getElementsByName('TotalKilometers').value = totalKm;
-
+            document.getElementById('totalReimbursementForm').value = totalReimbursement;
+            document.getElementById('totalKilometersForm').value = totalKm;
         }
-
-        document.addEventListener('DOMContentLoaded', function() {
-            updateTotals();
-        });
     </script>
-    }
+}
