@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using MileageExpenseTracker.Data;
+using MileageExpenseTracker.Helpers;
 using MileageExpenseTracker.Models;
 using MileageExpenseTracker.Services;
 
@@ -56,6 +57,9 @@ builder.Services.AddScoped<IMileageCreateLookupService, MileageCreateLookupServi
 builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
+
+//await IdentitySeeder.SeedUsersAndRolesAsync(app.Services);
+
 
 if (app.Environment.IsDevelopment())
 {

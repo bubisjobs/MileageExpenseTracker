@@ -6,14 +6,15 @@
 
 
 <div class="container" style="max-width: 1400px; margin: 0 auto; padding: 1.5rem;">
+   
     <!-- Header -->
     <div class="custom-card mb-4" style="padding: 1.5rem;">
         <div class="d-flex justify-content-between align-items-center">
             <div>
-                <h1 class="text-dark-custom" style="font-size: 1.875rem; font-weight: 700; margin-bottom: 0.25rem;">User Management</h1>
-                <p class="text-muted-custom" style="margin: 0; font-size: 1rem;">Manage users, roles, and permissions</p>
+                <h1 class="text-dark-custom" style="font-size: clamp(1.25rem, 4vw, 1.875rem); font-weight: 700; margin-bottom: 0.25rem;">User Management</h1>
+                <p class="text-muted-custom" style="margin: 0; font-size: clamp(0.875rem, 2vw, 1rem);">Manage users, roles, and permissions</p>
             </div>
-            <button type="button" class="btn-primary-custom d-flex align-items-center gap-2" data-bs-toggle="modal" data-bs-target="#addUserModal">
+            <button type="button" class="btn-primary-custom d-flex align-items-center gap-2" style="font-size: clamp(0.875rem, 2vw, 1rem); padding: clamp(0.5rem, 2vw, 0.75rem) clamp(0.75rem, 3vw, 1rem);" data-bs-toggle="modal" data-bs-target="#addUserModal">
                 <i class="bi bi-person-plus"></i>
                 Add New User
             </button>
@@ -40,104 +41,106 @@
             </button>
         </div>
     </div>
- 
-   
-    <!-- DataTable Card -->
-    <div class="custom-card" style="padding: 1.5rem;">
-        <table id="usersTable" class="table table-hover table-striped" style="width:100%">
-            <thead style="background-color: var(--gray-50);">
-                <tr>
-                    <th>Name</th>
-                    <th>Email</th>
-                    <th>Role</th>
-                    <th>Status</th>
-                    <th>Created Date</th>
-                    <th>Last Login</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach (var user in Model)
-                {
-                    <tr data-user-id="@user.Id">
-                        <td>
-                            <div class="d-flex align-items-center gap-2">
-                                <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">
-                                    @(user.FirstName?.Substring(0, 1))@(user.LastName?.Substring(0, 1))
-                                </div>
-                                <div>
-                                    <div style="font-weight: 600; color: var(--gray-900);">@user.FirstName @user.LastName</div>
-                                </div>
-                            </div>
-                        </td>
-                        <td>@user.Email</td>
-                        <td data-role="@user.Role">
-                            @{
-                                var roleClass = user.Role switch
-                                {
-                                    "Admin" => "bg-danger bg-opacity-10 text-danger",
-                                    "Finance" => "bg-success bg-opacity-10 text-success",
-                                    "TeamLead" => "bg-primary bg-opacity-10 text-primary",
-                                    _ => "bg-secondary bg-opacity-10 text-secondary"
-                                };
-                            }
-                            <span class="badge @roleClass" style="font-size: 0.75rem; padding: 0.375rem 0.75rem;">@user.Role</span>
-                        </td>
-                        <td>
-                            @if (user.IsActive == true) 
-                            { 
-                                <span class="badge bg-success bg-opacity-10 text-success" style="font-size: 0.75rem; padding: 0.375rem 0.75rem;"> 
-                                    <i class="bi bi-check-circle me-1"></i>Active 
-                                </span> 
-                            } 
-                            else 
-                            {
-                                <span class="badge bg-danger bg-opacity-10 text-danger" style="font-size: 0.75rem; padding: 0.375rem 0.75rem;"> 
-                                    <i class="bi bi-x-circle me-1"></i>Inactive 
-                                </span>
-                            }
-                        </td>
-                        <td data-order="@user.CreatedAt.ToString("yyyy-MM-dd")">@user.CreatedAt.ToString("MMM dd, yyyy")</td>
-                        <td data-order="@(user.LastLoginAt?.ToString("yyyy-MM-dd") ?? "")">
-                            @if (user.LastLoginAt != null)
-                            {
-                                @user.LastLoginAt?.ToString("MMM dd, yyyy hh:mm tt")
-                            }
-                            else
-                            {
-                                <span class="text-muted">Never</span>
-                            }
-                        </td>
-                        <td>
-                          
-                            @* we dont want logged in Admin or Fianance to delete themselves *@
-                            @if(User.Identity.Name != user.Email)
-                            {
-                                <div class="d-flex gap-1">
-                                    <button type="button" class="btn btn-sm btn-secondary-custom" onclick="editUser('@user.Email')" title="Edit">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
-                                            <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.5.5 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11z" />
-                                        </svg>
-                                    </button>
 
-                                    <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteUser('@user.Email', '@user.FirstName @user.LastName')" title="Delete">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
-                                            <path d="M2.146 2.146a.5.5 0 0 1 .708 0L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854a.5.5 0 0 1 0-.708z" />
-                                        </svg>
-                                    </button>
-                                </div>
-                            }
-                            else
-                            {
-                                <span class="badge bg-danger bg-opacity-10 text-danger" style="font-size: 0.75rem; padding: 0.375rem 0.75rem;">can't edit or delete yourself</span>
-                            }
-
-                        </td>
+    <div class="table-responsive">
+        <!-- DataTable Card -->
+        <div class="custom-card" style="padding: 1.5rem;">
+            <table id="usersTable" class="table table-hover table-striped" style="width:100%">
+                <thead style="background-color: var(--gray-50);">
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Status</th>
+                        <th>Created Date</th>
+                        <th>Last Login</th>
+                        <th>Actions</th>
                     </tr>
-                }
-            </tbody>
-        </table>
+                </thead>
+                <tbody>
+                    @foreach (var user in Model)
+                    {
+                        <tr data-user-id="@user.Id">
+                            <td>
+                                <div class="d-flex align-items-center gap-2">
+                                    <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); display: flex; align-items: center; justify-content: center; color: white; font-weight: 600; font-size: 0.875rem;">
+                                        @(user.FirstName?.Substring(0, 1))@(user.LastName?.Substring(0, 1))
+                                    </div>
+                                    <div>
+                                        <div style="font-weight: 600; color: var(--gray-900);">@user.FirstName @user.LastName</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>@user.Email</td>
+                            <td data-role="@user.Role">
+                                @{
+                                    var roleClass = user.Role switch
+                                    {
+                                        "Admin" => "bg-danger bg-opacity-10 text-danger",
+                                        "Finance" => "bg-success bg-opacity-10 text-success",
+                                        "TeamLead" => "bg-primary bg-opacity-10 text-primary",
+                                        _ => "bg-secondary bg-opacity-10 text-secondary"
+                                    };
+                                }
+                                <span class="badge @roleClass" style="font-size: 0.75rem; padding: 0.375rem 0.75rem;">@user.Role</span>
+                            </td>
+                            <td>
+                                @if (user.IsActive == true)
+                                {
+                                    <span class="badge bg-success bg-opacity-10 text-success" style="font-size: 0.75rem; padding: 0.375rem 0.75rem;">
+                                        <i class="bi bi-check-circle me-1"></i>Active
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger bg-opacity-10 text-danger" style="font-size: 0.75rem; padding: 0.375rem 0.75rem;">
+                                        <i class="bi bi-x-circle me-1"></i>Inactive
+                                    </span>
+                                }
+                            </td>
+                            <td data-order="@user.CreatedAt.ToString("yyyy-MM-dd")">@user.CreatedAt.ToString("MMM dd, yyyy")</td>
+                            <td data-order="@(user.LastLoginAt?.ToString("yyyy-MM-dd") ?? "")">
+                                @if (user.LastLoginAt != null)
+                                {
+                                    @user.LastLoginAt?.ToString("MMM dd, yyyy hh:mm tt")
+                                }
+                                else
+                                {
+                                    <span class="text-muted">Never</span>
+                                }
+                            </td>
+                            <td>
+
+                                @* we dont want logged in Admin or Fianance to delete themselves *@
+                                @if (User.Identity.Name != user.Email)
+                                {
+                                    <div class="d-flex gap-1">
+                                        <button type="button" class="btn btn-sm btn-secondary-custom" onclick="editUser('@user.Email')" title="Edit">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-pencil-fill" viewBox="0 0 16 16">
+                                                <path d="M12.854.146a.5.5 0 0 0-.707 0L10.5 1.793 14.207 5.5l1.647-1.646a.5.5 0 0 0 0-.708zm.646 6.061L9.793 2.5 3.293 9H3.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.5h.5a.5.5 0 0 1 .5.5v.207zm-7.468 7.468A.5.5 0 0 1 6 13.5V13h-.5a.5.5 0 0 1-.5-.5V12h-.5a.5.5 0 0 1-.5-.5V11h-.5a.5.5 0 0 1-.5-.5V10h-.5a.5.5 0 0 1-.175-.032l-.179.178a.5.5 0 0 0-.11.168l-2 5a.5.5 0 0 0 .65.65l5-2a.5.5 0 0 0 .168-.11z" />
+                                            </svg>
+                                        </button>
+
+                                        <button type="button" class="btn btn-sm btn-outline-danger" onclick="deleteUser('@user.Email', '@user.FirstName @user.LastName')" title="Delete">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-x-lg" viewBox="0 0 16 16">
+                                                <path d="M2.146 2.146a.5.5 0 0 1 .708 0L8 7.293l5.146-5.147a.5.5 0 0 1 .708.708L8.707 8l5.147 5.146a.5.5 0 0 1-.708.708L8 8.707l-5.146 5.147a.5.5 0 0 1-.708-.708L7.293 8 2.146 2.854a.5.5 0 0 1 0-.708z" />
+                                            </svg>
+                                        </button>
+                                    </div>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger bg-opacity-10 text-danger" style="font-size: 0.75rem; padding: 0.375rem 0.75rem;">can't edit or delete yourself</span>
+                                }
+
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
     </div>
+   
 </div>
 
 <!-- Add User Modal -->

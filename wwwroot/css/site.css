@@ -312,7 +312,7 @@ body {
         transform: translateY(-1px);
         box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     }
-
+/*
 @media (max-width: 576px) {
     .navbar-custom .container-fluid {
         padding: 0.75rem 1rem;
@@ -323,5 +323,64 @@ body {
         align-items: flex-start;
         gap: 0.5rem;
         margin-top: 1rem;
+    }
+}*/
+/* Mobile Navigation Fixes */
+@media (max-width: 576px) {
+    /* Fix navbar collapse alignment */
+    .navbar-collapse {
+        margin-top: 1rem;
+    }
+
+    /* Stack nav items vertically with proper spacing */
+    .navbar-nav {
+        gap: 0.5rem;
+    }
+
+    /* Make nav links full width and better aligned */
+    .nav-link-custom {
+        padding: 0.75rem 1rem !important;
+        display: flex !important;
+        align-items: center;
+        width: 100%;
+    }
+
+        /* Fix icon and text alignment */
+        .nav-link-custom svg,
+        .nav-link-custom .nav-icon {
+            margin-right: 0.75rem;
+            flex-shrink: 0;
+        }
+
+        .nav-link-custom .nav-text {
+            flex-grow: 1;
+        }
+
+    /* User menu alignment */
+    .user-menu-custom {
+        margin-top: 1rem;
+        padding-top: 1rem;
+        border-top: 1px solid rgba(255, 255, 255, 0.1);
+        display: flex;
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+
+    /* New Claim button full width on mobile */
+    .btn-nav-custom {
+        width: 100%;
+        text-align: center;
+        justify-content: center;
+        padding: 0.75rem 1rem !important;
+    }
+
+    /* Remove margin from brand on mobile */
+    .navbar-brand-custom {
+        margin: 0.5rem !important;
+    }
+
+    /* Ensure proper padding in collapsed menu */
+    #navbarNav {
+        padding: 0 0.5rem;
     }
 }
