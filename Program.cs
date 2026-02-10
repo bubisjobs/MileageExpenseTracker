@@ -15,7 +15,6 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-
 // Identity (with Roles)
 builder.Services.AddIdentity<User, IdentityRole>(options =>
 {
@@ -24,7 +23,7 @@ builder.Services.AddIdentity<User, IdentityRole>(options =>
 .AddEntityFrameworkStores<ApplicationDbContext>()
 .AddDefaultTokenProviders();
 
-// ? OPTION 1: Require login everywhere
+// Require login everywhere
 builder.Services.AddAuthorization(options =>
 {
     options.FallbackPolicy = new AuthorizationPolicyBuilder()
@@ -32,34 +31,37 @@ builder.Services.AddAuthorization(options =>
         .Build();
 });
 
-// ? Set Identity login paths
+// Cookie configuration with 20-minute timeout
 builder.Services.ConfigureApplicationCookie(options =>
 {
     options.LoginPath = "/Identity/Account/Login";
     options.AccessDeniedPath = "/AccessDenied";
-    //op
+    options.LogoutPath = "/Identity/Account/Logout";
+
+    // 20-minute session timeout
+    options.ExpireTimeSpan = TimeSpan.FromMinutes(1);
+    options.SlidingExpiration = true; // Resets on activity
+
+    // Security settings
+    options.Cookie.HttpOnly = true;
+    options.Cookie.SecurePolicy = CookieSecurePolicy.Always;
+    options.Cookie.SameSite = SameSiteMode.Strict;
 });
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
-
 builder.Services.AddControllersWithViews();
-//builder.Services.AddRazorPages();
+
 builder.Services.AddRazorPages(options =>
 {
     options.Conventions.AllowAnonymousToAreaPage("Identity", "/Account/Login");
-    //options.Conventions.AllowAnonymousToAreaPage("Identity", "/Account/Register");
     options.Conventions.AllowAnonymousToAreaPage("Identity", "/Account/ForgotPassword");
     options.Conventions.AllowAnonymousToAreaPage("Identity", "/Account/ResetPassword");
-
 });
-//builder.Services.AddTransient<IEmailSender, NoOpEmailSender>();
+
 builder.Services.AddScoped<IMileageCreateLookupService, MileageCreateLookupService>();
 builder.Services.AddScoped<IEmailService, EmailService>();
 
 var app = builder.Build();
-
-//await IdentitySeeder.SeedUsersAndRolesAsync(app.Services);
-
 
 if (app.Environment.IsDevelopment())
 {
@@ -73,7 +75,6 @@ else
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
 
 app.UseAuthentication();

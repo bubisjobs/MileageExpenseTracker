@@ -74,34 +74,34 @@
                         </td>
                         <td style="padding: 0.75rem; text-align: center;">
                             <div style="display: inline-flex; gap: 0.5rem;">
-                                <a asp-action="Edit" asp-route-id="@item.Id"
-                                   style="
-                                       padding: 0.375rem 0.75rem;
-                                       background-color: #3b82f6;
-                                       color: white;
-                                       border-radius: 0.25rem;
-                                       text-decoration: none;
-                                       font-size: 0.875rem;
-                                       font-weight: 500;
-                                       "
-                                   onmouseover="this.style.backgroundColor='#2563eb'"
-                                   onmouseout="this.style.backgroundColor='#3b82f6'">
-                                    Edit
-                                </a>
-                                <a asp-action="Details" asp-route-id="@item.Id"
-                                   style="
-                                       padding: 0.375rem 0.75rem;
-                                       background-color: #6b7280;
-                                       color: white;
-                                       border-radius: 0.25rem;
-                                       text-decoration: none;
-                                       font-size: 0.875rem;
-                                       font-weight: 500;
-                                       "
-                                   onmouseover="this.style.backgroundColor='#4b5563'"
-                                   onmouseout="this.style.backgroundColor='#6b7280'">
-                                    Details
-                                </a>
+                                @* <a asp-action="Edit" asp-route-id="@item.Id" *@
+                                @*    style=" *@
+                                @*        padding: 0.375rem 0.75rem; *@
+                                @*        background-color: #3b82f6; *@
+                                @*        color: white; *@
+                                @*        border-radius: 0.25rem; *@
+                                @*        text-decoration: none; *@
+                                @*        font-size: 0.875rem; *@
+                                @*        font-weight: 500; *@
+                                @*        " *@
+                                @*    onmouseover="this.style.backgroundColor='#2563eb'" *@
+                                @*    onmouseout="this.style.backgroundColor='#3b82f6'"> *@
+                                @*     Edit *@
+                                @* </a> *@
+                                @* <a asp-action="Details" asp-route-id="@item.Id" *@
+                                @*    style=" *@
+                                @*        padding: 0.375rem 0.75rem; *@
+                                @*        background-color: #6b7280; *@
+                                @*        color: white; *@
+                                @*        border-radius: 0.25rem; *@
+                                @*        text-decoration: none; *@
+                                @*        font-size: 0.875rem; *@
+                                @*        font-weight: 500; *@
+                                @*        " *@
+                                @*    onmouseover="this.style.backgroundColor='#4b5563'" *@
+                                @*    onmouseout="this.style.backgroundColor='#6b7280'"> *@
+                                @*     Details *@
+                                @* </a> *@
                                 <a href="javascript:void(0);"
                                    onclick="confirmDelete(@item.Id)"
                                    style="

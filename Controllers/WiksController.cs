@@ -85,56 +85,56 @@ namespace MileageExpenseTracker.Controllers
             return View(wik);
         }
 
-        // GET: Wiks/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+        //// GET: Wiks/Edit/5
+        //public async Task<IActionResult> Edit(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
 
-            var wik = await _context.Wik.FindAsync(id);
-            if (wik == null)
-            {
-                return NotFound();
-            }
-            return View(wik);
-        }
+        //    var wik = await _context.Wik.FindAsync(id);
+        //    if (wik == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return View(wik);
+        //}
 
-        // POST: Wiks/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Wik wik)
-        {
-            if (id != wik.Id)
-            {
-                return NotFound();
-            }
+        //// POST: Wiks/Edit/5
+        //// To protect from overposting attacks, enable the specific properties you want to bind to.
+        //// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        //public async Task<IActionResult> Edit(int id, [Bind("Id,Name")] Wik wik)
+        //{
+        //    if (id != wik.Id)
+        //    {
+        //        return NotFound();
+        //    }
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(wik);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!WikExists(wik.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(wik);
-        }
+        //    if (ModelState.IsValid)
+        //    {
+        //        try
+        //        {
+        //            _context.Update(wik);
+        //            await _context.SaveChangesAsync();
+        //        }
+        //        catch (DbUpdateConcurrencyException)
+        //        {
+        //            if (!WikExists(wik.Id))
+        //            {
+        //                return NotFound();
+        //            }
+        //            else
+        //            {
+        //                throw;
+        //            }
+        //        }
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    return View(wik);
+        //}
 
         // GET: Wiks/Delete/5
         //public async Task<IActionResult> Delete(int? id)
@@ -167,7 +167,7 @@ namespace MileageExpenseTracker.Controllers
                     var mileageClaims = await _context.MileageClaims.Where(x => x.Wik == wik.Name).ToListAsync();
                     if (mileageClaims.Any())
                     {
-                        TempData["ErrorMessage"] = "This wik has an exsting Claim.";
+                        TempData["ErrorMessage"] = "This wik has an existing Claim.";
                         return RedirectToAction(nameof(Index));
 
 

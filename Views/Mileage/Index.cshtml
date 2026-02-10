@@ -12,7 +12,7 @@
         <div class="d-flex justify-content-between align-items-center">
             <div>
                 <h1 class="text-dark-custom" style="font-size: 1.875rem; font-weight: 700; margin-bottom: 0.25rem;">Mileage Claims</h1>
-                <p class="text-muted-custom" style="margin: 0; font-size: 1rem;">Track and submit your mileage reimbursement claims</p>
+                <p class="text-muted-custom" style="margin: 0; font-size: 1rem;"> submit and track your mileage reimbursement claims</p>
             </div>
             <a asp-action="Create" class="btn-primary-custom text-decoration-none d-flex align-items-center gap-2 text-white">
                 <i class="bi bi-plus-circle"></i>
@@ -27,18 +27,14 @@
             <button class="btn btn-sm status-filter-btn active" data-status="all" style="padding: 0.5rem 1rem; border-radius: 0.375rem; border: 1px solid #d1d5db; background: white; font-weight: 500; transition: all 0.2s;">
                 All Claims
             </button>
-            @* <button class="btn btn-sm status-filter-btn" data-status="Draft" style="padding: 0.5rem 1rem; border-radius: 0.375rem; border: 1px solid #d1d5db; background: white; font-weight: 500; transition: all 0.2s;"> *@
-            @*     Draft *@
-            @* </button> *@
+
             <button class="btn btn-sm status-filter-btn" data-status="SubmittedToTeamLead" style="padding: 0.5rem 1rem; border-radius: 0.375rem; border: 1px solid #d1d5db; background: white; font-weight: 500; transition: all 0.2s;">
                 Pending Team Lead 
             </button>
             <button class="btn btn-sm status-filter-btn" data-status="TeamLeadApproved" style="padding: 0.5rem 1rem; border-radius: 0.375rem; border: 1px solid #d1d5db; background: white; font-weight: 500; transition: all 0.2s;">
                 Team Lead Approved and Pending Finance
             </button>
-            @* <button class="btn btn-sm status-filter-btn" data-status="SubmittedToFinance" style="padding: 0.5rem 1rem; border-radius: 0.375rem; border: 1px solid #d1d5db; background: white; font-weight: 500; transition: all 0.2s;"> *@
-            @*     Pending Finance *@
-            @* </button> *@
+           
             <button class="btn btn-sm status-filter-btn" data-status="FinanceApproved" style="padding: 0.5rem 1rem; border-radius: 0.375rem; border: 1px solid #d1d5db; background: white; font-weight: 500; transition: all 0.2s;">
                 Approved
             </button>
@@ -78,10 +74,10 @@
                                     // "Draft" => ("Draft", "status-draft"),
                                     "SubmittedToTeamLead" => ("Pending Team Lead", "status-submitted"),
                                     "TeamLeadApproved" => ("Team Lead Approved and Pending Finance", "status-approved"),
-                                    "TeamLeadRejected" => ("Team Lead Rejected ", "status-rejected"),
+                                    "TeamLeadRejected" => ("Rejected ", "status-rejected"),
                                     // "SubmittedToFinance" => ("Pending Finance", "status-submitted"),
                                     "FinanceApproved" => ("Finance Approved", "status-submitted"),
-                                    "FinanceRejected" => ("Finance Rejected", "status-rejected"),
+                                    "FinanceRejected" => ("Rejected", "status-rejected"),
                                     "Rejected" => ("Rejected", "status-rejected"),
                                     "Approved" => ("Approved", "status-approved"),
                                     _ => ("Unknown", "status-draft")
@@ -249,41 +245,13 @@
                  '<"row"<"col-sm-12"tr>>' +
                  '<"row"<"col-sm-12 col-md-5"i><"col-sm-12 col-md-7"p>>',
 
-            // Export Buttons
-            buttons: [
-                {
-                    extend: 'excel',
-                    text: '<i class="bi bi-file-earmark-excel me-1"></i> Export Excel',
-                    className: 'btn-sm',
-                    exportOptions: {
-                        columns: [0, 1, 2, 3, 4, 5, 6] // Exclude Actions column
-                    }
-                },
-                {
-                    extend: 'pdf',
-                    text: '<i class="bi bi-file-earmark-pdf me-1"></i> Export PDF',
-                    className: 'btn-sm',
-                    exportOptions: {
-                        columns: [0, 1, 2, 3, 4, 5, 6]
-                    }
-                },
-                {
-                    extend: 'print',
-                    text: '<i class="bi bi-printer me-1"></i> Print',
-                    className: 'btn-sm',
-                    exportOptions: {
-                        columns: [0, 1, 2, 3, 4, 5, 6]
-                    }
-                }
-            ],
-
             // Responsive
             responsive: true,
 
             // Language customization
             language: {
                 search: "Search claims:",
-                lengthMenu: "Show _MENU_ claims",
+                lengthMenu: "Show _MENU_claims",
                 info: "Showing _START_ to _END_ of _TOTAL_ claims",
                 infoEmpty: "No claims available",
                 infoFiltered: "(filtered from _MAX_ total claims)",

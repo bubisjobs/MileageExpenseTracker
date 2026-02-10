@@ -12,11 +12,15 @@ namespace MileageExpenseTracker.Models
 
         // Claim owner (logged-in employee)
         //[Required]
+        [Display(Name = "Employee Name")]
+
         public string? EmployeeName { get; set; } = default!;
 
         public string? Email { get; set; } = default!;
 
         // Team lead selected from dropdown (first approver)
+        [Display(Name = "Team Lead")]
+
         [Required]
         public string? TeamLeadApprover { get; set; } = default!;
         public virtual User? Approver { get; set; }

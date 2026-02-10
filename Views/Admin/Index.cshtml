@@ -53,7 +53,7 @@
                         <th>Role</th>
                         <th>Status</th>
                         <th>Created Date</th>
-                        <th>Last Login</th>
+                        @* <th>Last Login</th> *@
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -99,16 +99,7 @@
                                 }
                             </td>
                             <td data-order="@user.CreatedAt.ToString("yyyy-MM-dd")">@user.CreatedAt.ToString("MMM dd, yyyy")</td>
-                            <td data-order="@(user.LastLoginAt?.ToString("yyyy-MM-dd") ?? "")">
-                                @if (user.LastLoginAt != null)
-                                {
-                                    @user.LastLoginAt?.ToString("MMM dd, yyyy hh:mm tt")
-                                }
-                                else
-                                {
-                                    <span class="text-muted">Never</span>
-                                }
-                            </td>
+
                             <td>
 
                                 @* we dont want logged in Admin or Fianance to delete themselves *@
@@ -292,7 +283,7 @@
                 zeroRecords: "No matching users found"
             },
             columnDefs: [
-                { targets: 6, orderable: false, className: 'text-center' }
+                { targets: 5, orderable: false, className: 'text-center' }
             ]
         });
 
