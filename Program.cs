@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
 using Microsoft.EntityFrameworkCore;
 using MileageExpenseTracker.Data;
-using MileageExpenseTracker.Helpers;
 using MileageExpenseTracker.Models;
 using MileageExpenseTracker.Services;
 
