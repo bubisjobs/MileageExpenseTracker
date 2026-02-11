@@ -12,7 +12,7 @@
         <div class="d-flex justify-content-between align-items-center">
             <div>
                 <h1 class="text-dark-custom" style="font-size: 1.875rem; font-weight: 700; margin-bottom: 0.25rem;">Mileage Claims</h1>
-                <p class="text-muted-custom" style="margin: 0; font-size: 1rem;">Track and submit your mileage reimbursement claims</p>
+                <p class="text-muted-custom" style="margin: 0; font-size: 1rem;"> submit and track your mileage reimbursement claims</p>
             </div>
             <a asp-action="Create" class="btn-primary-custom text-decoration-none d-flex align-items-center gap-2 text-white">
                 <i class="bi bi-plus-circle"></i>
@@ -81,7 +81,7 @@
                                     "TeamLeadRejected" => ("Team Lead Rejected ", "status-rejected"),
                                     // "SubmittedToFinance" => ("Pending Finance", "status-submitted"),
                                     "FinanceApproved" => ("Finance Approved", "status-submitted"),
-                                    "FinanceRejected" => ("Finance Rejected", "status-rejected"),
+                                    "FinanceRejected" => ("Rejected", "status-rejected"),
                                     "Rejected" => ("Rejected", "status-rejected"),
                                     "Approved" => ("Approved", "status-approved"),
                                     _ => ("Unknown", "status-draft")

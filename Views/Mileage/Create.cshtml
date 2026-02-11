@@ -1,5 +1,4 @@
-﻿
-@model MileageExpenseTracker.Models.ViewModels.MileageCreateVM
+﻿@model MileageExpenseTracker.Models.ViewModels.MileageCreateVM
 @inject Microsoft.Extensions.Configuration.IConfiguration Configuration
 @{
     ViewData["Title"] = "Add Claim";
@@ -39,13 +38,13 @@
 
                 <div class="col-md-4">
                     <label asp-for="mileageClaim.StartDate" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;">Start Date</label>
-                    <input asp-for="mileageClaim.StartDate" class="form-control form-control-custom" type="date" />
+                    <input asp-for="mileageClaim.StartDate" class="form-control form-control-custom" type="date" id="startDate" />
                     <span asp-validation-for="mileageClaim.StartDate" class="text-danger" style="font-size: 0.875rem;"></span>
                 </div>
 
                 <div class="col-md-4">
                     <label asp-for="mileageClaim.EndDate" class="form-label text-dark-custom fw-medium" style="font-size: 0.875rem; margin-bottom: 0.5rem;">End Date</label>
-                    <input asp-for="mileageClaim.EndDate" class="form-control form-control-custom" type="date" />
+                    <input asp-for="mileageClaim.EndDate" class="form-control form-control-custom" type="date" id="endDate" />
                     <span asp-validation-for="mileageClaim.EndDate" class="text-danger" style="font-size: 0.875rem;"></span>
                 </div>
 
@@ -68,7 +67,7 @@
                     <div class="row g-2 align-items-end">
                         <div class="col-md-2">
                             <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">Date</label>
-                            <input type="date" name="mileageClaim.Trips[0].TripDate" class="form-control form-control-sm" required />
+                            <input type="date" name="mileageClaim.Trips[0].TripDate" class="form-control form-control-sm trip-date" required />
                         </div>
                         <div class="col-md-1">
                             <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">Time</label>
@@ -148,7 +147,6 @@
         </div>
 
         <div class="d-flex gap-2">
-        
             <button type="submit" name="action" value="submit" class="btn-primary-custom">
                 <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" fill="currentColor" class="bi bi-send" viewBox="0 0 16 16">
                     <path d="M15.964 0.686a.5.5 0 0 1 .036.708l-15 15a.5.5 0 0 1-.708-.708l15-15a.5.5 0 0 1 .708.036z" />
@@ -171,10 +169,182 @@
         let tripIndex = 1;
         let autocompleteInstances = [];
 
+        // Get today's date in YYYY-MM-DD format
+        const today = new Date().toISOString().split('T')[0];
+
         // Initialize autocomplete when page loads
         document.addEventListener('DOMContentLoaded', function() {
             initializeAutocomplete();
             updateTotals();
+            setDateConstraints();
+            setupDateValidation();
+        });
+
+        // Set max date to today for all date inputs
+        function setDateConstraints() {
+            // Set max date for Start Date and End Date
+            document.getElementById('startDate').setAttribute('max', today);
+            document.getElementById('endDate').setAttribute('max', today);
+
+            // Set max date for all trip dates
+            document.querySelectorAll('.trip-date').forEach(input => {
+                input.setAttribute('max', today);
+            });
+        }
+
+        // Setup date validation
+        function setupDateValidation() {
+            // Validate Start Date
+            document.getElementById('startDate').addEventListener('change', function() {
+                if (this.value > today) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Date',
+                        text: 'Start date cannot be in the future.',
+                        confirmButtonColor: '#3b82f6'
+                    });
+                    this.value = '';
+                    return;
+                }
+
+                // Update End Date min value
+                const endDate = document.getElementById('endDate');
+                endDate.setAttribute('min', this.value);
+
+                // Validate if End Date is already set
+                if (endDate.value && endDate.value < this.value) {
+                    Swal.fire({
+                        icon: 'warning',
+                        title: 'Date Conflict',
+                        text: 'End date must be on or after the start date.',
+                        confirmButtonColor: '#3b82f6'
+                    });
+                    endDate.value = '';
+                }
+            });
+
+            // Validate End Date
+            document.getElementById('endDate').addEventListener('change', function() {
+                const startDate = document.getElementById('startDate').value;
+
+                if (this.value > today) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Date',
+                        text: 'End date cannot be in the future.',
+                        confirmButtonColor: '#3b82f6'
+                    });
+                    this.value = '';
+                    return;
+                }
+
+                if (startDate && this.value < startDate) {
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Invalid Date Range',
+                        text: 'End date must be on or after the start date.',
+                        confirmButtonColor: '#3b82f6'
+                    });
+                    this.value = '';
+                }
+            });
+
+            // Validate trip dates
+            document.addEventListener('change', function(e) {
+                if (e.target.classList.contains('trip-date')) {
+                    validateTripDate(e.target);
+                }
+            });
+        }
+
+        function validateTripDate(input) {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+            const tripDate = input.value;
+
+            // Check if date is in the future
+            if (tripDate > today) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Trip Date',
+                    text: 'Trip date cannot be in the future.',
+                    confirmButtonColor: '#3b82f6'
+                });
+                input.value = '';
+                return false;
+            }
+
+            // Check if trip date is within claim date range
+            if (startDate && tripDate < startDate) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Trip Date Out of Range',
+                    text: 'Trip date must be on or after the claim start date.',
+                    confirmButtonColor: '#3b82f6'
+                });
+                input.value = '';
+                return false;
+            }
+
+            if (endDate && tripDate > endDate) {
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Trip Date Out of Range',
+                    text: 'Trip date must be on or before the claim end date.',
+                    confirmButtonColor: '#3b82f6'
+                });
+                input.value = '';
+                return false;
+            }
+
+            return true;
+        }
+
+        // Form submission validation
+        document.getElementById('createClaimForm').addEventListener('submit', function(e) {
+            const startDate = document.getElementById('startDate').value;
+            const endDate = document.getElementById('endDate').value;
+
+            // Validate claim dates
+            if (startDate > today) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Start Date',
+                    text: 'Start date cannot be in the future.',
+                    confirmButtonColor: '#3b82f6'
+                });
+                return;
+            }
+
+            if (endDate > today) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid End Date',
+                    text: 'End date cannot be in the future.',
+                    confirmButtonColor: '#3b82f6'
+                });
+                return;
+            }
+
+            // Validate all trip dates
+            let hasInvalidDate = false;
+            document.querySelectorAll('.trip-date').forEach(input => {
+                if (input.value > today) {
+                    hasInvalidDate = true;
+                }
+            });
+
+            if (hasInvalidDate) {
+                e.preventDefault();
+                Swal.fire({
+                    icon: 'error',
+                    title: 'Invalid Trip Dates',
+                    text: 'One or more trip dates are in the future.',
+                    confirmButtonColor: '#3b82f6'
+                });
+            }
         });
 
         function initializeAutocomplete() {
@@ -184,7 +354,7 @@
                 if (!input.dataset.autocompleteInitialized) {
                     const autocomplete = new google.maps.places.Autocomplete(input, {
                         types: ['geocode'],
-                        componentRestrictions: { country: 'ca' } // Restrict to Canada
+                        componentRestrictions: { country: 'ca' }
                     });
 
                     autocomplete.addListener('place_changed', function() {
@@ -194,7 +364,6 @@
                         }
                     });
 
-                    // Also trigger calculation when user types and presses Enter
                     input.addEventListener('blur', function() {
                         setTimeout(() => calculateDistance(input), 500);
                     });
@@ -212,7 +381,6 @@
             const endInput = tripRow.querySelector('.end-location');
             const kmInput = tripRow.querySelector('.trip-kilometers');
 
-            // Only calculate if both locations are filled
             if (startInput.value.trim() && endInput.value.trim()) {
                 const service = new google.maps.DistanceMatrixService();
 
@@ -225,12 +393,10 @@
                     if (status === 'OK') {
                         const result = response.rows[0].elements[0];
                         if (result.status === 'OK') {
-                            // Distance in kilometers
                             const distanceKm = (result.distance.value / 1000).toFixed(1);
                             kmInput.value = distanceKm;
                             updateTotals();
 
-                            // Visual feedback
                             kmInput.style.backgroundColor = '#dcfce7';
                             setTimeout(() => {
                                 kmInput.style.backgroundColor = '#f3f4f6';
@@ -270,7 +436,7 @@
                 <div class="row g-2 align-items-end">
                     <div class="col-md-2">
                         <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">Date</label>
-                        <input type="date" name="mileageClaim.Trips[${tripIndex}].TripDate" class="form-control form-control-sm" required />
+                        <input type="date" name="mileageClaim.Trips[${tripIndex}].TripDate" class="form-control form-control-sm trip-date" max="${today}" required />
                     </div>
                     <div class="col-md-1">
                         <label style="font-size: 0.75rem; margin-bottom: 0.25rem; color: var(--gray-700);">Time</label>
@@ -308,7 +474,6 @@
             container.appendChild(newRow);
             tripIndex++;
 
-            // Initialize autocomplete for new inputs
             initializeAutocomplete();
             updateTotals();
         }

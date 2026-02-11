@@ -29,14 +29,14 @@ namespace MileageExpenseTracker.SD
                     <tr>
                         <td style=""background-color: #f9fafb; padding: 30px;"">
                             <h2 style=""margin: 0 0 15px 0; color: #333; font-size: 20px;"">Hello {firstName} {lastName},</h2>
-                            <p style=""margin: 0 0 15px 0; color: #333;"">You have been invited to join the BBI Mileage Tracker as a <strong>{role}</strong>. You are receiving this request to reset your password for your Mileage Tracker account.</p>
+                            <p style=""margin: 0 0 15px 0; color: #333;"">You have been invited to join the BBI Mileage Tracker as  <strong>{role}</strong>. You are receiving this request to reset your password for your Mileage Tracker account.</p>
                             <p style=""margin: 0 0 15px 0; color: #333;"">To reset your password, please click the button below:</p>
                             
                             <!-- Button -->
                             <table role=""presentation"" style=""width: 100%; border-collapse: collapse;"">
                                 <tr>
                                     <td style=""text-align: center; padding: 20px 0;"">
-                                        <a href=""{{link}}"" style=""display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); background-color: #667eea; color: #ffffff; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold;"">Reset Password</a>
+                                        <a href=""{link}"" style=""display: inline-block; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); background-color: #667eea; color: #ffffff; padding: 12px 30px; text-decoration: none; border-radius: 6px; font-weight: bold;"">Reset Password</a>
                                     </td>
                                 </tr>
                             </table>
